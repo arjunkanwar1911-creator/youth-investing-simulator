@@ -226,7 +226,7 @@
     </footer>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
   <script type="module">
     import { project, costOfWaiting, toMoney } from './lib/compound.js';
 
@@ -245,6 +245,50 @@
       if (n >= 100000) return '₹' + (n / 100000).toFixed(2).replace(/\.00$/, '') + ' lakh';
       return money(n);
     }
+
+    // Name each line at its own end. The legend above covers narrow screens, where
+    // there isn't room for this without labels landing on top of each other.
+    const directLabels = {
+      id: 'directLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx, chartArea } = chart;
+        if (chartArea.right - chartArea.left < 360) return;
+
+        ctx.save();
+        ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'right';
+
+        chart.data.datasets.forEach((dataset, i) => {
+          const points = chart.getDatasetMeta(i).data
+            .filter((_, idx) => dataset.data[idx] !== null && dataset.data[idx] !== undefined);
+          const last = points.at(-1);
+          if (!last) return;
+
+          const text = dataset.label;
+          const width = ctx.measureText(text).width;
+          const x = last.x - 8;
+          const y = last.y + (i === 0 ? -15 : 17);
+
+          // A soft pill keeps the text readable where it crosses a line or a fill.
+          ctx.fillStyle = 'rgba(255,255,255,.9)';
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(x - width - 20, y - 10, width + 26, 20, 10);
+          else ctx.rect(x - width - 20, y - 10, width + 26, 20);
+          ctx.fill();
+
+          ctx.fillStyle = dataset.borderColor;   // the mark carries identity
+          ctx.beginPath();
+          ctx.arc(x - width - 9, y, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#3D4759';             // the text stays ink
+          ctx.fillText(text, x, y);
+        });
+
+        ctx.restore();
+      },
+    };
 
     const el = (id) => document.getElementById(id);
     const inputs = {
@@ -272,8 +316,9 @@
         ],
       };
 
-      const options = {
+      const options = {   // read once, when the chart is created
         responsive: true, maintainAspectRatio: false,
+        layout: { padding: { right: 6, top: 10 } },
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { display: false },          // drawn in HTML above, so it never clips
@@ -308,12 +353,21 @@
         },
       };
 
+      // If the CDN is blocked or offline the numbers and the table still work,
+      // so lose the chart rather than the page.
+      if (typeof Chart === 'undefined') {
+        el('chart').closest('.chart-box').hidden = true;
+        el('table-box').hidden = false;
+        return;
+      }
+
       if (chart) {
         chart.data = data;
-        chart.options = options;
         chart.update();
       } else {
-        chart = new Chart(el('chart'), { type: 'line', data, options });
+        chart = new Chart(el('chart'), {
+          type: 'line', data, options, plugins: [directLabels],
+        });
       }
     }
 
@@ -350,7 +404,8 @@
 
       el('cost').textContent = readable(waiting.difference);
       el('cost-note').textContent = options.years <= DELAY_YEARS
-        ? 'Over a run this short there is almost nothing left to wait with.'
+        ? 'Waiting five years out of ' + options.years + ' means never starting at all — '
+          + 'all you would have is the ' + money(options.startingAmount) + ' you began with.'
         : 'Same monthly habit, same return — just five fewer years of it. That is '
           + waiting.percentLost.toFixed(0) + '% of the pot, gone.';
 
