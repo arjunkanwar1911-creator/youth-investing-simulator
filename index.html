@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Youth Investing Simulator</title>
+  <meta name="description" content="Learn compound interest, risk and diversification with pretend money on real market data.">
+  <style>
+    :root {
+      --blue: #2563EB;
+      --blue-dark: #1D4ED8;
+      --blue-soft: #EFF6FF;
+      --ink: #0F172A;
+      --muted: #5A6578;
+      --line: #E3E8EF;
+      --bg: #FFFFFF;
+      --done: #2563EB;
+      --now: #93B4FD;
+      --todo: #E3E8EF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+
+    /* ---- header ---- */
+    header {
+      background: linear-gradient(160deg, var(--blue) 0%, var(--blue-dark) 100%);
+      color: #fff;
+      padding-block: 48px 40px;
+    }
+    .eyebrow {
+      font-size: 12px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; opacity: .75; margin: 0 0 10px;
+    }
+    h1 { font-size: 34px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -.02em; }
+    .mission { font-size: 18px; margin: 0; opacity: .95; max-width: 34ch; }
+
+    /* ---- sections ---- */
+    section { padding-block: 36px; border-bottom: 1px solid var(--line); }
+    section:last-of-type { border-bottom: 0; }
+    h2 {
+      font-size: 13px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); margin: 0 0 18px;
+    }
+
+    /* ---- progress strip ---- */
+    .strip { display: flex; gap: 5px; margin: 0 0 14px; }
+    .strip span {
+      flex: 1; height: 9px; border-radius: 99px; background: var(--todo);
+    }
+    .strip span.done { background: var(--done); }
+    .strip span.now  { background: var(--now); }
+    .strip-meta {
+      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      font-size: 14px; color: var(--muted);
+    }
+    .pill {
+      display: inline-block; background: var(--blue-soft); color: var(--blue-dark);
+      font-size: 13px; font-weight: 600; padding: 3px 11px; border-radius: 99px;
+    }
+
+    /* ---- build log ---- */
+    .log { list-style: none; margin: 0; padding: 0; }
+    .log li {
+      padding: 0 0 18px 20px; border-left: 2px solid var(--line);
+      position: relative; margin-left: 4px;
+    }
+    .log li:last-child { padding-bottom: 0; }
+    .log li::before {
+      content: ""; position: absolute; left: -7px; top: 7px;
+      width: 12px; height: 12px; border-radius: 99px;
+      background: var(--blue); border: 3px solid var(--bg);
+    }
+    .log b { display: block; font-size: 15px; }
+    .log time { font-size: 13px; color: var(--muted); }
+    .log p { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
+
+    /* ---- who it's for ---- */
+    .for { margin: 0; padding: 0; list-style: none; }
+    .for li { padding: 0 0 10px 24px; position: relative; }
+    .for li::before {
+      content: "→"; position: absolute; left: 0; color: var(--blue); font-weight: 700;
+    }
+
+    /* ---- footer ---- */
+    footer { padding-block: 28px 44px; font-size: 13px; color: var(--muted); }
+    .disclaimer {
+      background: var(--blue-soft); border-radius: 10px;
+      padding: 12px 14px; margin: 0 0 16px; color: var(--blue-dark);
+      font-size: 14px; font-weight: 600;
+    }
+    a { color: var(--blue); }
+
+    @media (max-width: 420px) {
+      h1 { font-size: 28px; }
+      .mission { font-size: 17px; }
+      .strip { gap: 3px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <p class="eyebrow">StepAhead</p>
+      <h1>Youth Investing Simulator</h1>
+      <p class="mission">Learn how money grows — compound interest, risk and diversification — by investing pretend money on real market prices.</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section>
+      <h2>Progress</h2>
+      <div class="strip" role="img" aria-label="Milestone 1 of 16 in progress">
+        <span class="now"></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="strip-meta">
+        <span><strong>M1</strong> of M16 &middot; building the live link</span>
+        <span class="pill">Level 0 &middot; Built</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Who this is for</h2>
+      <ul class="for">
+        <li>A 14-to-18 year old who has heard "invest early" but has never seen what it does.</li>
+        <li>Someone who wants to make mistakes with money that costs nothing.</li>
+        <li>A teacher or club who needs a safe way to teach investing in one lesson.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Build log</h2>
+      <ul class="log">
+        <li>
+          <b>M1 &middot; Repo and live link</b>
+          <time>Started 12 October 2026</time>
+          <p>Project set up, landing page written, and this page put on the internet. One link that never changes.</p>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>Built by Arjun with StepAhead &middot; <a href="https://stepaheadco.com">stepaheadco.com</a></p>
+    </footer>
+  </div>
+
+</body>
+</html>
