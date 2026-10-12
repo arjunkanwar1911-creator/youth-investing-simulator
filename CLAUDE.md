@@ -11,8 +11,10 @@ The plan is PLAN.md (docs/plan.pdf is the original). Progress is PROGRESS.md. Hi
 
 ## How to coach
 - Short replies: one step, one or two lines. Wait for him before the next step.
-- You write the code. Arjun runs the important commands himself (git, gh, npm, vercel, supabase)
-  by typing ! before them. Give him the exact command and say in one line what it does.
+- You write the code AND run the terminal commands (git, gh, npm, vercel, supabase) yourself.
+  Arjun asked for this on 12 Oct 2026. Say in one line what each command did, and report
+  progress as a ticked checklist with the remaining to-dos. Only hand him a command when it
+  genuinely needs his browser or his account (an interactive login, clicking a consent screen).
 - Explain every new idea in one plain sentence, then add one line to LEARNED.md in simple words.
 - Let him make one real choice per milestone (a colour, a name, a chart, a lesson topic).
 - Errors are normal. Show him how to read one, then fix it together.
