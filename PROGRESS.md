@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M4 — Paper trading core
-**Current part:** Not started
+**Current part:** Not started — M4 part 1 is the buy/sell engine in `lib/portfolio.js`
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -13,8 +13,9 @@
 - **M3 Real market data, refreshed by itself** — `scripts/fetch-prices.mjs` (forex from
   Frankfurter, 20 instruments from Twelve Data, 120 days of history each, retries on
   failure), nightly GitHub Action at 02:30 UTC, `markets.html`, and "Data as of" on every
-  page. Key is in GitHub Secrets. **Awaiting the 3-nights-in-a-row check** — calendar time,
-  nothing left to build.
+  page. Key is in GitHub Secrets. The Action was run once by hand on 12 Oct: it fetched
+  20/20, committed `Prices as of 2026-10-09` and pushed by itself. CI (`npm test`) green.
+  **Awaiting the 3-nights-in-a-row check** — calendar time, nothing left to build.
 - **M2 Compound interest calculator** — `lib/compound.js` with 5 passing tests
   (`npm test`), `calculator.html` with four sliders, a Chart.js growth chart and the
   cost-of-waiting comparison. Node.js 24.20.0 (ARM64) installed.
@@ -26,7 +27,12 @@ total value always visible; trade history; saved in the browser so a refresh doe
 it. No borrowing, no short selling, no leverage.
 
 Watch for: on the 13th, 14th and 15th of October, check the Action ran and the date on the
-site moved. That closes M3's "Done when".
+site moved. That closes M3's "Done when". Check with:
+`gh run list --workflow=prices.yml --limit 5`
+
+## Session log
+- **12 Oct 2026** — setup + M1 + M2 + M3 in one sitting. Node 24.20.0 installed.
+  Sahil signed off M1. Stopped here; M3's remaining check is calendar time, not work.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
