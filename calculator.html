@@ -80,6 +80,11 @@
     .legend span { display: inline-flex; align-items: center; gap: 7px; }
     .swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; }
     .chart-box { position: relative; height: 320px; }
+    .chart-fallback {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      text-align: center; margin: 0; padding: 20px; color: var(--muted); font-size: 14px;
+      border: 1px dashed var(--line); border-radius: 12px;
+    }
     .toggle {
       background: none; border: 1px solid var(--line); color: var(--ink-2);
       font: inherit; font-size: 13px; font-weight: 600; padding: 5px 12px;
@@ -196,6 +201,9 @@
         <span><i class="swatch" style="background:#D97706"></i> Started 5 years later</span>
       </div>
       <div class="chart-box">
+        <p class="chart-fallback" id="chart-fallback" hidden>
+          The chart could not load this time. Every number behind it is in the table below.
+        </p>
         <canvas id="chart" role="img"
                 aria-label="A line chart comparing the value of starting now against starting five years later. The numbers behind it are in the table below."></canvas>
       </div>
@@ -353,21 +361,31 @@
         },
       };
 
-      // If the CDN is blocked or offline the numbers and the table still work,
-      // so lose the chart rather than the page.
-      if (typeof Chart === 'undefined') {
-        el('chart').closest('.chart-box').hidden = true;
+      // The chart is the garnish; the numbers are the meal. If the chart library is
+      // blocked, offline, or throws, say so and point at the table — never blank out.
+      const giveUp = (why) => {
+        console.error('Chart unavailable:', why);
+        el('chart').hidden = true;
+        el('chart-fallback').hidden = false;
         el('table-box').hidden = false;
-        return;
-      }
+        el('table-toggle').textContent = 'Hide the numbers';
+        el('table-toggle').setAttribute('aria-expanded', 'true');
+      };
 
-      if (chart) {
-        chart.data = data;
-        chart.update();
-      } else {
-        chart = new Chart(el('chart'), {
-          type: 'line', data, options, plugins: [directLabels],
-        });
+      if (typeof Chart === 'undefined') return giveUp('the Chart.js script did not load');
+
+      try {
+        if (chart) {
+          chart.data = data;
+          chart.update();
+        } else {
+          chart = new Chart(el('chart'), {
+            type: 'line', data, options, plugins: [directLabels],
+          });
+        }
+      } catch (err) {
+        chart = null;
+        giveUp(err);
       }
     }
 
@@ -419,8 +437,6 @@
         return row ? toMoney(row.value) : null;
       });
 
-      buildChart(labels, onTimeLine, delayedLine);
-
       el('table-body').innerHTML = labels.map((year, i) => `<tr>
         <td>${year}</td>
         <td>${money(onTime.yearly[i].contributed)}</td>
@@ -438,6 +454,9 @@
            timing the market.`
         : `Stretch the years slider past ${DELAY_YEARS} to see what waiting costs. Compounding needs
            time before it has anything to show you.`;
+
+      // Last, on purpose. Everything above has already painted by now.
+      buildChart(labels, onTimeLine, delayedLine);
     }
 
     Object.values(inputs).forEach((input) => input.addEventListener('input', render));
