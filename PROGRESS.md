@@ -1,7 +1,7 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M2 — Compound interest calculator
+**Current milestone:** M3 — Real market data, refreshed by itself
 **Current part:** Not started
 
 ## Done
@@ -9,12 +9,18 @@
 - **M1 Repo and live link** — public repo, README, mobile-first landing page with progress
   strip and Build log, live on GitHub Pages at
   https://arjunkanwar1911-creator.github.io/youth-investing-simulator
-  (awaiting Sahil's phone check, the formal "Done when")
+  — **signed off by Sahil**
+- **M2 Compound interest calculator** — `lib/compound.js` with 5 passing tests
+  (`npm test`), `calculator.html` with four sliders, a Chart.js growth chart and the
+  cost-of-waiting comparison. Node.js 24.20.0 (ARM64) installed.
 
 ## Next step (exact)
-Install Node.js (needed to run M2's tests from the terminal), then build the compound
-interest calculator: the maths in its own file with three passing tests, then the page
-and the growth chart.
+M3: fetch forex from Frankfurter (no key needed) and daily stock prices from Twelve Data,
+save them as JSON, and run it nightly with a GitHub Action.
+
+**Blocked on Arjun:** a free Twelve Data API key from https://twelvedata.com/pricing
+(free plan, no card). Once he has it, it goes into GitHub Secrets as `TWELVE_DATA_KEY`.
+The Frankfurter half of M3 needs no key and can be built first.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
@@ -22,7 +28,7 @@ over, and report progress as a ticked checklist.
 
 ## Milestones
 - [x] M1 Repo and live link
-- [ ] M2 Compound interest calculator
+- [x] M2 Compound interest calculator
 - [ ] M3 Real market data, refreshed by itself
 - [ ] M4 Paper trading core
 - [ ] M5 Risk and diversification

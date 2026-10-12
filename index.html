@@ -81,6 +81,17 @@
     .log time { font-size: 13px; color: var(--muted); }
     .log p { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
 
+    /* ---- try it card ---- */
+    .try {
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .try:hover { border-color: var(--blue); box-shadow: 0 2px 10px rgba(37,99,235,.09); }
+    .try b { display: block; font-size: 17px; color: var(--blue-dark); }
+    .try p { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
+    .try .go { font-size: 14px; font-weight: 600; color: var(--blue); margin-top: 10px; display: block; }
+
     /* ---- who it's for ---- */
     .for { margin: 0; padding: 0; list-style: none; }
     .for li { padding: 0 0 10px 24px; position: relative; }
@@ -118,16 +129,26 @@
 
     <section>
       <h2>Progress</h2>
-      <div class="strip" role="img" aria-label="Milestone 1 of 16 complete">
-        <span class="done"></span><span class="now"></span><span></span><span></span>
+      <div class="strip" role="img" aria-label="Milestones 1 and 2 of 16 complete">
+        <span class="done"></span><span class="done"></span><span class="now"></span><span></span>
         <span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span>
       </div>
       <div class="strip-meta">
-        <span><strong>M1</strong> of M16 done &middot; next: compound interest calculator</span>
+        <span><strong>M2</strong> of M16 done &middot; next: real market data</span>
         <span class="pill">Level 0 &middot; Built</span>
       </div>
+    </section>
+
+    <section>
+      <h2>Try it</h2>
+      <a class="try" href="calculator.html">
+        <b>What does time do to money?</b>
+        <p>Move four sliders and watch what waiting five years costs you. The first thing
+           every young investor should feel.</p>
+        <span class="go">Open the calculator &rarr;</span>
+      </a>
     </section>
 
     <section>
@@ -142,6 +163,12 @@
     <section>
       <h2>Build log</h2>
       <ul class="log">
+        <li>
+          <b>M2 &middot; Compound interest calculator</b>
+          <time>12 October 2026</time>
+          <p>Sliders for your plan, a growth chart, and the cost of waiting five years.
+             The maths sits in its own file with five tests that run from the terminal.</p>
+        </li>
         <li>
           <b>M1 &middot; Repo and live link</b>
           <time>12 October 2026</time>

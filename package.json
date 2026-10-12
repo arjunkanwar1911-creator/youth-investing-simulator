@@ -1,0 +1,10 @@
+{
+  "name": "youth-investing-simulator",
+  "version": "0.1.0",
+  "description": "A paper trading app on real market data that teaches compound interest, risk and diversification.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
