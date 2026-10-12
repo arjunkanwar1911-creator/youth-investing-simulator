@@ -47,4 +47,4 @@ Full plan: [`PLAN.md`](PLAN.md) · Original brief: [`docs/plan.pdf`](docs/plan.p
 
 ## Built by
 
-Arjun, learning to code and invest at the same time, with [StepAhead](https://stepaheadco.com).
+Arjun, learning to code and invest at the same time.

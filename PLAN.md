@@ -4,8 +4,6 @@ A paper trading app on real stock and forex data that teaches young people compo
 interest, risk and diversification. Measured by one thing: how many people learn to
 invest responsibly with it.
 
-StepAhead · stepaheadco.com
-
 | | |
 |---|---|
 | **Prepared by** | Sahil |
