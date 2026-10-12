@@ -13,3 +13,12 @@
 - A **test** is code that checks my code. `npm test` runs all five of mine in under a second.
 - The best test works the answer out a *different* way (I checked my loop against the textbook annuity formula), so one bug can't hide in both.
 - **Time in the market beats timing the market**: waiting 5 years out of 20 skips only 1.2 lakh of saving but costs 4.78 lakh at the end.
+
+## M3 — Real market data
+- An **API** is a website built for programs instead of people. I ask a URL a question, it answers in **JSON**.
+- A **rate limit** is the API saying "not so fast". Twelve Data's free plan allows 8 symbols a minute, so my script asks for 8, waits 61 seconds, asks again.
+- An **API key** is a password. It lives in **GitHub Secrets** and in `.env.local` (which `.gitignore` keeps out of git). It is never in the code.
+- A **GitHub Action** is a robot that runs my script on a schedule. Mine wakes at 02:30 UTC — 8am in India — every night.
+- **cron** `30 2 * * *` means "minute 30, hour 2, every day". Five fields: minute, hour, day, month, weekday.
+- Networks fail for no reason, so anything running unattended should **retry** before giving up. Mine tries 3 times with longer waits. My first run lost 4 symbols to one blip; with retries it got all 20.
+- Prices are for **trading days**. Friday's close is still the latest on a Sunday — that's why the date says 9 October, not 12.

@@ -228,7 +228,8 @@
   <div class="wrap">
     <footer>
       <p class="disclaimer">Educational, pretend money, not financial advice.</p>
-      <p>Built by Arjun. The maths behind this page lives in
+      <p><span data-asof>Loading data date&hellip;</span> &middot; Built by Arjun.
+        The maths behind this page lives in
         <a href="https://github.com/arjunkanwar1911-creator/youth-investing-simulator/blob/main/lib/compound.js"><code>lib/compound.js</code></a>
         and is checked by five tests.</p>
     </footer>
@@ -237,6 +238,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
   <script type="module">
     import { project, costOfWaiting, toMoney } from './lib/compound.js';
+    import { showDataDate } from './lib/asof.js';
+
+    showDataDate('./data/meta.json');
 
     const DELAY_YEARS = 5;
     const BLUE = '#2563EB';

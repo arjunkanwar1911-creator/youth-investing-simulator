@@ -129,14 +129,14 @@
 
     <section>
       <h2>Progress</h2>
-      <div class="strip" role="img" aria-label="Milestones 1 and 2 of 16 complete">
-        <span class="done"></span><span class="done"></span><span class="now"></span><span></span>
+      <div class="strip" role="img" aria-label="Milestones 1 to 3 of 16 complete">
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span>
         <span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span>
       </div>
       <div class="strip-meta">
-        <span><strong>M2</strong> of M16 done &middot; next: real market data</span>
+        <span><strong>M3</strong> of M16 done &middot; next: the paper trading simulator</span>
         <span class="pill">Level 0 &middot; Built</span>
       </div>
     </section>
@@ -148,6 +148,12 @@
         <p>Move four sliders and watch what waiting five years costs you. The first thing
            every young investor should feel.</p>
         <span class="go">Open the calculator &rarr;</span>
+      </a>
+      <a class="try" href="markets.html" style="margin-top:12px">
+        <b>Real market data</b>
+        <p>Twenty companies and index funds, with real closing prices and exchange rates.
+           A robot refreshes them every night.</p>
+        <span class="go">See the markets &rarr;</span>
       </a>
     </section>
 
@@ -163,6 +169,12 @@
     <section>
       <h2>Build log</h2>
       <ul class="log">
+        <li>
+          <b>M3 &middot; Real market data, refreshed by itself</b>
+          <time>12 October 2026</time>
+          <p>Exchange rates and 20 instruments with real closing prices, fetched nightly by a
+             GitHub Action. The API key lives in GitHub Secrets, never in the code.</p>
+        </li>
         <li>
           <b>M2 &middot; Compound interest calculator</b>
           <time>12 October 2026</time>
@@ -182,9 +194,14 @@
   <div class="wrap">
     <footer>
       <p class="disclaimer">Educational, pretend money, not financial advice.</p>
-      <p>Built by Arjun.</p>
+      <p><span data-asof>Loading data date&hellip;</span> &middot; Built by Arjun.</p>
     </footer>
   </div>
+
+  <script type="module">
+    import { showDataDate } from './lib/asof.js';
+    showDataDate('./data/meta.json');
+  </script>
 
 </body>
 </html>

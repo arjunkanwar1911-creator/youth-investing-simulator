@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market data — Youth Investing Simulator</title>
+  <meta name="description" content="Real closing prices and exchange rates, refreshed every night by itself.">
+  <style>
+    :root {
+      --blue: #2563EB; --blue-dark: #1D4ED8; --blue-soft: #EFF6FF;
+      --ink: #0F172A; --ink-2: #3D4759; --muted: #5A6578;
+      --line: #E3E8EF; --line-soft: #F1F4F8; --bg: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px; }
+
+    header { background: linear-gradient(160deg, var(--blue) 0%, var(--blue-dark) 100%); color: #fff; padding-block: 28px 32px; }
+    .back { color: #fff; opacity: .8; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .back:hover { opacity: 1; }
+    h1 { font-size: 28px; line-height: 1.2; margin: 14px 0 8px; letter-spacing: -.02em; }
+    header p { margin: 0; opacity: .95; max-width: 46ch; }
+    .asof-chip {
+      display: inline-block; margin-top: 14px; background: rgba(255,255,255,.16);
+      border-radius: 99px; padding: 4px 13px; font-size: 14px; font-weight: 600;
+    }
+
+    section { padding-block: 32px; border-bottom: 1px solid var(--line); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+    .note { font-size: 14px; color: var(--muted); margin: 0 0 18px; }
+
+    /* ---- forex ---- */
+    .fx { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .fx-card { border: 1px solid var(--line); border-radius: 12px; padding: 15px 16px; }
+    .fx-card .pair { font-size: 13px; font-weight: 600; color: var(--muted); margin: 0 0 2px; }
+    .fx-card .rate { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+    .fx-card .rate small { font-size: 14px; font-weight: 600; color: var(--muted); }
+
+    /* ---- instruments ---- */
+    .table-box { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 15px; }
+    th, td { text-align: right; padding: 10px 10px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 170px; }
+    thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-bottom: 1px solid var(--line); }
+    tbody tr:hover { background: var(--blue-soft); }
+    .name { font-weight: 600; }
+    .ticker { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+    .tag {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 5px;
+      background: var(--blue-soft); color: var(--blue-dark); margin-left: 6px;
+    }
+    .spark { display: block; }
+    .chg { font-variant-numeric: tabular-nums; }
+    .chg .arrow { font-size: 12px; }
+
+    .loading, .error { color: var(--muted); font-size: 15px; }
+    .error { color: #9A5407; }
+
+    footer { padding-block: 26px 44px; font-size: 13px; color: var(--muted); }
+    .disclaimer {
+      background: var(--blue-soft); border-radius: 10px; padding: 12px 14px;
+      margin: 0 0 16px; color: var(--blue-dark); font-size: 14px; font-weight: 600;
+    }
+    a { color: var(--blue); }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 24px; }
+      .fx { grid-template-columns: 1fr; }
+      th, td { padding: 9px 8px; font-size: 14px; }
+      th:first-child, td:first-child { min-width: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>Market data</h1>
+      <p>Real closing prices and real exchange rates. A robot fetches these every night
+         at 8am India time &mdash; nobody presses anything.</p>
+      <span class="asof-chip" data-asof>Loading&hellip;</span>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section>
+      <h2>Currencies</h2>
+      <p class="note">What one unit of each currency is worth in rupees. This is why a US
+         share that didn't move can still change your money.</p>
+      <div class="fx" id="fx"><p class="loading">Loading rates&hellip;</p></div>
+    </section>
+
+    <section>
+      <h2>What you'll be able to trade</h2>
+      <p class="note">Twenty instruments: fifteen companies you've heard of, and five index
+         funds that each hold hundreds of companies at once. The little line is the last
+         30 trading days.</p>
+      <div class="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Close</th>
+              <th scope="col">In rupees</th>
+              <th scope="col">30 days</th>
+              <th scope="col">Change</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="5" class="loading">Loading prices&hellip;</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>Currencies from <a href="https://frankfurter.dev">Frankfurter</a>, prices from
+         <a href="https://twelvedata.com">Twelve Data</a>, both on free plans. Fetched by
+         <a href="https://github.com/arjunkanwar1911-creator/youth-investing-simulator/blob/main/.github/workflows/prices.yml">a nightly GitHub Action</a>.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { showDataDate } from './lib/asof.js';
+    import { INSTRUMENTS } from './lib/universe.js';
+
+    const SPARK_DAYS = 30;
+    const BLUE = '#2563EB';
+
+    const usd = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const inr = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+
+    /** A tiny line, no axes, no labels — shape only. */
+    function sparkline(closes, width = 96, height = 26) {
+      if (closes.length < 2) return '';
+      const min = Math.min(...closes);
+      const max = Math.max(...closes);
+      const span = max - min || 1;
+      const step = width / (closes.length - 1);
+
+      const points = closes
+        .map((close, i) => `${(i * step).toFixed(1)},${(height - ((close - min) / span) * (height - 4) - 2).toFixed(1)}`)
+        .join(' ');
+
+      return `<svg class="spark" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"
+                   aria-hidden="true" focusable="false">
+                <polyline points="${points}" fill="none" stroke="${BLUE}"
+                          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>`;
+    }
+
+    function renderForex(forex) {
+      document.getElementById('fx').innerHTML = Object.entries(forex.rates)
+        .map(([code, { inr: rate }]) => `
+          <div class="fx-card">
+            <p class="pair">1 ${code} buys</p>
+            <div class="rate">&#8377;${usd.format(rate)}</div>
+          </div>`)
+        .join('');
+    }
+
+    function renderInstruments(stocks, usdToInr) {
+      const rows = INSTRUMENTS.map((instrument) => {
+        const entry = stocks.prices[instrument.symbol];
+        if (!entry?.history?.length) {
+          return `<tr><td class="name">${instrument.name}
+                    <div class="ticker">${instrument.symbol}</div></td>
+                  <td colspan="4" class="error">no price yet</td></tr>`;
+        }
+
+        // History is newest first. Oldest-to-newest is what a line wants.
+        const window = entry.history.slice(0, SPARK_DAYS).reverse();
+        const closes = window.map((row) => row.close);
+        const latest = closes.at(-1);
+        const first = closes[0];
+        const changePct = ((latest - first) / first) * 100;
+        const up = changePct >= 0;
+
+        return `<tr>
+          <td class="name">${instrument.name}${instrument.kind === 'fund' ? '<span class="tag">fund</span>' : ''}
+            <div class="ticker">${instrument.symbol} &middot; ${instrument.sector}</div></td>
+          <td>$${usd.format(latest)}</td>
+          <td>&#8377;${inr.format(latest * usdToInr)}</td>
+          <td>${sparkline(closes)}</td>
+          <td class="chg"><span class="arrow">${up ? '▲' : '▼'}</span>
+              ${up ? '+' : ''}${changePct.toFixed(1)}%</td>
+        </tr>`;
+      });
+
+      document.getElementById('rows').innerHTML = rows.join('');
+    }
+
+    async function load() {
+      await showDataDate('./data/meta.json');
+
+      try {
+        const [forex, stocks] = await Promise.all([
+          fetch('./data/forex.json', { cache: 'no-cache' }).then((r) => r.json()),
+          fetch('./data/stocks.json', { cache: 'no-cache' }).then((r) => r.json()),
+        ]);
+
+        renderForex(forex);
+        renderInstruments(stocks, forex.rates.USD.inr);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('fx').innerHTML =
+          '<p class="error">Could not load the rates. The nightly job may not have run yet.</p>';
+        document.getElementById('rows').innerHTML =
+          '<tr><td colspan="5" class="error">Could not load prices.</td></tr>';
+      }
+    }
+
+    load();
+  </script>
+
+</body>
+</html>

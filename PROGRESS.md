@@ -1,7 +1,7 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M3 — Real market data, refreshed by itself
+**Current milestone:** M4 — Paper trading core
 **Current part:** Not started
 
 ## Done
@@ -10,17 +10,23 @@
   strip and Build log, live on GitHub Pages at
   https://arjunkanwar1911-creator.github.io/youth-investing-simulator
   — **signed off by Sahil**
+- **M3 Real market data, refreshed by itself** — `scripts/fetch-prices.mjs` (forex from
+  Frankfurter, 20 instruments from Twelve Data, 120 days of history each, retries on
+  failure), nightly GitHub Action at 02:30 UTC, `markets.html`, and "Data as of" on every
+  page. Key is in GitHub Secrets. **Awaiting the 3-nights-in-a-row check** — calendar time,
+  nothing left to build.
 - **M2 Compound interest calculator** — `lib/compound.js` with 5 passing tests
   (`npm test`), `calculator.html` with four sliders, a Chart.js growth chart and the
   cost-of-waiting comparison. Node.js 24.20.0 (ARM64) installed.
 
 ## Next step (exact)
-M3: fetch forex from Frankfurter (no key needed) and daily stock prices from Twelve Data,
-save them as JSON, and run it nightly with a GitHub Action.
+M4 Paper trading core: buy and sell the 20 instruments in `lib/universe.js` at the latest
+close from `data/stocks.json`, starting from 1,00,000 of pretend money. Holdings, cash and
+total value always visible; trade history; saved in the browser so a refresh does not wipe
+it. No borrowing, no short selling, no leverage.
 
-**Blocked on Arjun:** a free Twelve Data API key from https://twelvedata.com/pricing
-(free plan, no card). Once he has it, it goes into GitHub Secrets as `TWELVE_DATA_KEY`.
-The Frankfurter half of M3 needs no key and can be built first.
+Watch for: on the 13th, 14th and 15th of October, check the Action ran and the date on the
+site moved. That closes M3's "Done when".
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
@@ -29,7 +35,7 @@ over, and report progress as a ticked checklist.
 ## Milestones
 - [x] M1 Repo and live link
 - [x] M2 Compound interest calculator
-- [ ] M3 Real market data, refreshed by itself
+- [x] M3 Real market data, refreshed by itself *(pending the 3-night check)*
 - [ ] M4 Paper trading core
 - [ ] M5 Risk and diversification
 - [ ] M6 Learn mode
