@@ -1,17 +1,27 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M1 — Repo and live link
-**Current part:** Part 1 of 2 — create the repo and push the landing page
+**Current milestone:** M2 — Compound interest calculator
+**Current part:** Not started
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
+- **M1 Repo and live link** — public repo, README, mobile-first landing page with progress
+  strip and Build log, live on GitHub Pages at
+  https://arjunkanwar1911-creator.github.io/youth-investing-simulator
+  (awaiting Sahil's phone check, the formal "Done when")
 
 ## Next step (exact)
-Install Node.js, then create the GitHub repo and push the landing page so the one link goes live.
+Install Node.js (needed to run M2's tests from the terminal), then build the compound
+interest calculator: the maths in its own file with three passing tests, then the page
+and the growth chart.
+
+## Note on how we work
+Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
+over, and report progress as a ticked checklist.
 
 ## Milestones
-- [ ] M1 Repo and live link
+- [x] M1 Repo and live link
 - [ ] M2 Compound interest calculator
 - [ ] M3 Real market data, refreshed by itself
 - [ ] M4 Paper trading core
