@@ -29,3 +29,6 @@
 - Computers are bad at decimals (`0.1 + 0.2` is `0.30000000000000004`), so my money is stored in whole **paise**. Whole numbers never drift.
 - An **edge case** is the weird input at the edges: buying with exactly all my cash, selling more than I own, a quantity of zero. Most bugs live there, so each one has a test.
 - A **random test** fires 200 random trades and checks the rules after every single one. It found a weak spot in my *test* before it found anything in my code.
+- **localStorage** is a small notebook each website gets inside my browser. My portfolio is saved there, so a refresh doesn't wipe it, but it stays on that one browser only.
+- **Rounding adds up.** With shares rounded to 6 decimals, ₹7,500 of Apple cost ₹7,500.01. 8 decimals fixed it. Tiny errors matter when you're promising "it always adds up".
+- A **browser test** clicks the real buttons in a hidden browser. Mine did Sahil's 20 trades and caught the paisa bug before he did.

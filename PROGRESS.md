@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M4 — Paper trading core
-**Current part:** M4 part 2 — the trade page (`trade.html`)
+**Current part:** M4 part 3 — Sahil's 20 trades on the live link
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -25,8 +25,16 @@
   shares to 6 decimals, friendly refusal messages, average cost kept on partial sells.
   12 tests in `test/portfolio.test.js` including 200 random trades. `npm test` 17/17.
 
+- **M4 part 2 — trade page** (19 Oct) — `trade.html` + `lib/prices.js` (close × exchange
+  rate in paise). Arjun's choice: part shares allowed (defaulted while he was away; one line
+  to change). Order in rupees, sell-all button, sticky cash/holdings/total bar to the paisa,
+  history, saved in localStorage, reset with a confirm step. Shares now 8 decimals (6 made
+  ₹7,500 cost ₹7,500.01). Headless Edge drove 20 trades: total exact after every one,
+  survives refresh, no errors at 390px.
+
 ## Next step (exact)
-M4 part 2, `trade.html`: wire `lib/portfolio.js` to the page. Buy and sell the 20 instruments in `lib/universe.js` at the latest
+M4 part 3: Sahil makes 20 trades on the live trade page. If clean, close M4 (Build log,
+strip to 4/16, LEARNED question, WhatsApp update). Original brief for reference: buy and sell the 20 instruments in `lib/universe.js` at the latest
 close from `data/stocks.json`, starting from 1,00,000 of pretend money. Holdings, cash and
 total value always visible; trade history; saved in the browser so a refresh does not wipe
 it. No borrowing, no short selling, no leverage.

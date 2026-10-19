@@ -49,7 +49,7 @@ test('edge case: you cannot sell more than you own', () => {
 });
 
 test('edge case: zero, negative and nonsense quantities are refused', () => {
-  for (const quantity of [0, -5, NaN, Infinity, 0.0000001]) {
+  for (const quantity of [0, -5, NaN, Infinity, 0.000000001]) {
     assert.equal(buy(newPortfolio(), { symbol: 'KO', quantity, pricePaise: 650000, date: day }).ok, false, `qty ${quantity}`);
   }
   assert.equal(buy(newPortfolio(), { symbol: 'KO', quantity: 1, pricePaise: undefined, date: day }).ok, false);
@@ -117,4 +117,15 @@ test('a damaged saved copy is spotted instead of loaded', () => {
   assert.equal(isPortfolio({ cashPaise: 'lots', holdings: {}, trades: [] }), false);
   assert.equal(isPortfolio({ cashPaise: -1, holdings: {}, trades: [] }), false);
   assert.equal(isPortfolio(newPortfolio()), true);
+});
+
+test('typing a rupee amount costs exactly that amount, even on an expensive share', () => {
+  // The glitch the browser test caught: ₹7,500 of Apple used to cost ₹7,500.01.
+  const pricePaise = 3261493; // about ₹32,615 a share
+  for (const rupees of [7500, 2500, 3333.33, 1500.5, 20000]) {
+    const amountPaise = Math.round(rupees * 100);
+    const p = ok(buy(newPortfolio(), { symbol: 'AAPL', quantity: amountPaise / pricePaise, pricePaise, date: day }));
+    assert.equal(p.trades[0].totalPaise, amountPaise, `₹${rupees}`);
+    assert.equal(value(p, { AAPL: pricePaise }).totalPaise, STARTING_CASH_PAISE, `₹${rupees} total`);
+  }
 });

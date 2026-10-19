@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trade — Youth Investing Simulator</title>
+  <meta name="description" content="Buy and sell real companies and index funds with 1,00,000 of pretend money.">
+  <style>
+    :root {
+      --blue: #2563EB; --blue-dark: #1D4ED8; --blue-soft: #EFF6FF;
+      --ink: #0F172A; --ink-2: #3D4759; --muted: #5A6578;
+      --line: #E3E8EF; --line-soft: #F1F4F8; --bg: #FFFFFF;
+      --up: #047857; --down: #B42318; --warn-bg: #FEF6E7; --warn: #8A4B06;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px; }
+
+    header { background: linear-gradient(160deg, var(--blue) 0%, var(--blue-dark) 100%); color: #fff; padding-block: 28px 32px; }
+    .back { color: #fff; opacity: .8; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .back:hover { opacity: 1; }
+    h1 { font-size: 28px; line-height: 1.2; margin: 14px 0 8px; letter-spacing: -.02em; }
+    header p { margin: 0; opacity: .95; max-width: 48ch; }
+    .asof-chip {
+      display: inline-block; margin-top: 14px; background: rgba(255,255,255,.16);
+      border-radius: 99px; padding: 4px 13px; font-size: 14px; font-weight: 600;
+    }
+
+    /* ---- the money bar: always on screen ---- */
+    .money {
+      position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+      background: rgba(255,255,255,.96); backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--line);
+    }
+    .money .wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-block: 12px; }
+    .money .label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .money .amt { font-size: 21px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+    .money .total .amt { color: var(--blue-dark); }
+    .money .sub { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    section { padding-block: 30px; border-bottom: 1px solid var(--line); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+    .note { font-size: 14px; color: var(--muted); margin: 0 0 16px; }
+
+    /* ---- order form ---- */
+    .order { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 5px; }
+    select, input {
+      width: 100%; font: inherit; color: var(--ink); background: #fff;
+      border: 1px solid #CBD3DF; border-radius: 10px; padding: 10px 12px;
+    }
+    select:focus, input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
+    .amount { position: relative; }
+    .amount span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
+    .amount input { padding-left: 28px; font-variant-numeric: tabular-nums; }
+    .quote { font-size: 14px; color: var(--muted); margin: 10px 0 0; min-height: 1.6em; font-variant-numeric: tabular-nums; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    button {
+      font: inherit; font-weight: 700; border-radius: 10px; padding: 10px 22px;
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .buy { background: var(--blue); color: #fff; }
+    .buy:hover { background: var(--blue-dark); }
+    .sell { background: #fff; color: var(--blue-dark); border-color: var(--blue); }
+    .sell:hover { background: var(--blue-soft); }
+    .ghost { background: none; border: 0; color: var(--blue); padding: 4px 0; font-weight: 600; font-size: 14px; }
+    .ghost.danger { color: var(--down); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .msg { margin: 14px 0 0; padding: 11px 14px; border-radius: 10px; font-size: 15px; }
+    .msg.good { background: #ECFDF3; color: var(--up); }
+    .msg.bad { background: var(--warn-bg); color: var(--warn); }
+
+    /* ---- tables ---- */
+    .table-box { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 15px; }
+    th, td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    th:first-child, td:first-child { text-align: left; white-space: normal; }
+    thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-bottom: 1px solid var(--line); }
+    .name { font-weight: 600; }
+    .ticker { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+    .up { color: var(--up); } .down { color: var(--down); }
+    .side { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
+    .side.buy-tag { background: var(--blue-soft); color: var(--blue-dark); }
+    .side.sell-tag { background: var(--line-soft); color: var(--ink-2); }
+    .empty { color: var(--muted); font-size: 15px; margin: 0; }
+    .reset-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 14px; color: var(--muted); }
+
+    footer { padding-block: 26px 44px; font-size: 13px; color: var(--muted); }
+    .disclaimer {
+      background: var(--blue-soft); border-radius: 10px; padding: 12px 14px;
+      margin: 0 0 16px; color: var(--blue-dark); font-size: 14px; font-weight: 600;
+    }
+    a { color: var(--blue); }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 24px; }
+      .order { grid-template-columns: 1fr; }
+      .money .amt { font-size: 15px; }
+      .money .wrap { gap: 6px; }
+      .money .label { font-size: 11px; letter-spacing: .04em; }
+      th, td { padding: 8px 6px; font-size: 14px; }
+      .wide-only { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>Trade with pretend money</h1>
+      <p>You start with &#8377;1,00,000. Buy and sell real companies and index funds at
+         their latest closing price. You can buy part of a share, so &#8377;5,000 of
+         anything works.</p>
+      <span class="asof-chip" data-asof>Loading&hellip;</span>
+    </div>
+  </header>
+
+  <div class="money" aria-live="polite">
+    <div class="wrap">
+      <div><div class="label">Cash</div><div class="amt" id="cash">&hellip;</div></div>
+      <div><div class="label">Holdings</div><div class="amt" id="holdings">&hellip;</div></div>
+      <div class="total"><div class="label">Total value</div><div class="amt" id="total">&hellip;</div>
+        <div class="sub" id="vs-start"></div></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <section>
+      <h2>Place an order</h2>
+      <p class="note">No borrowing, no selling what you don't own. Just like a real
+         beginner's account.</p>
+      <form id="order" novalidate>
+        <div class="order">
+          <div>
+            <label for="symbol">What</label>
+            <select id="symbol" disabled><option>Loading prices&hellip;</option></select>
+          </div>
+          <div>
+            <label for="rupees">How much</label>
+            <div class="amount"><span>&#8377;</span>
+              <input id="rupees" inputmode="decimal" autocomplete="off" placeholder="5000" disabled>
+            </div>
+          </div>
+        </div>
+        <p class="quote" id="quote"></p>
+        <div class="buttons">
+          <button type="submit" class="buy" id="buy" disabled>Buy</button>
+          <button type="button" class="sell" id="sell" disabled>Sell</button>
+          <button type="button" class="ghost" id="sell-all" hidden>Sell all of it</button>
+        </div>
+        <p class="msg" id="msg" role="status" hidden></p>
+      </form>
+    </section>
+
+    <section>
+      <h2>What you own</h2>
+      <div id="owned"><p class="empty">Nothing yet. All your money is cash.</p></div>
+    </section>
+
+    <section>
+      <h2>Trade history</h2>
+      <div id="history"><p class="empty">No trades yet.</p></div>
+    </section>
+
+    <section>
+      <div class="reset-row">
+        <span>Saved in this browser, so a refresh won't wipe it.</span>
+        <button type="button" class="ghost danger" id="reset">Start again with &#8377;1,00,000</button>
+        <button type="button" class="ghost danger" id="reset-yes" hidden>Yes, wipe everything</button>
+        <button type="button" class="ghost" id="reset-no" hidden>Keep my portfolio</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>Prices are the latest close, converted to rupees at the latest exchange rate.
+         <a href="markets.html">See the market data</a>.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { showDataDate, formatDate } from './lib/asof.js';
+    import { INSTRUMENTS } from './lib/universe.js';
+    import { pricesInPaise } from './lib/prices.js';
+    import { newPortfolio, buy, sell, value, isPortfolio, STARTING_CASH_PAISE } from './lib/portfolio.js';
+
+    const SAVE_KEY = 'yis.portfolio.v1';
+    const $ = (id) => document.getElementById(id);
+    const byId = Object.fromEntries(INSTRUMENTS.map((i) => [i.symbol, i]));
+
+    const inr0 = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+    const inr2 = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const rupees = (paise) => '₹' + inr2.format(paise / 100);
+    const rupeesRound = (paise) => '₹' + inr0.format(Math.round(paise / 100));
+    const shares = (q) => q.toLocaleString('en-IN', { maximumFractionDigits: 4 });
+    const signed = (paise) => (paise > 0 ? '+' : paise < 0 ? '−' : '') + rupeesRound(Math.abs(paise));
+
+    let prices = {};
+    let priceDate = null;
+    let portfolio = load();
+
+    // ---- saving in the browser ----
+    function load() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (isPortfolio(saved)) return saved;
+        if (saved !== null) console.warn('Saved portfolio looked damaged, starting fresh.');
+      } catch { /* private window or blocked storage: just start fresh */ }
+      return newPortfolio();
+    }
+    function save() {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(portfolio)); } catch { /* not fatal */ }
+    }
+
+    // ---- drawing the page from the state ----
+    function render() {
+      const v = value(portfolio, prices);
+      // To the paisa, so the three numbers on screen always add up exactly.
+      $('cash').textContent = rupees(v.cashPaise);
+      $('holdings').textContent = rupees(v.holdingsPaise);
+      $('total').textContent = rupees(v.totalPaise);
+      const change = v.totalPaise - STARTING_CASH_PAISE;
+      $('vs-start').innerHTML = portfolio.trades.length
+        ? `<span class="${change >= 0 ? 'up' : 'down'}">${signed(change)}</span> since you started`
+        : '';
+
+      $('owned').innerHTML = v.rows.length ? `
+        <div class="table-box"><table>
+          <thead><tr><th scope="col">Name</th><th scope="col">Shares</th><th scope="col">Worth</th>
+            <th scope="col" class="wide-only">Paid</th><th scope="col">Up / down</th></tr></thead>
+          <tbody>${v.rows.sort((a, b) => b.valuePaise - a.valuePaise).map((r) => `
+            <tr><td><span class="name">${byId[r.symbol]?.name ?? r.symbol}</span>
+                  <div class="ticker">${r.symbol} &middot; ${Math.round((r.valuePaise / v.totalPaise) * 100)}% of total</div></td>
+                <td>${shares(r.quantity)}</td>
+                <td>${rupeesRound(r.valuePaise)}</td>
+                <td class="wide-only">${rupeesRound(r.costPaise)}</td>
+                <td class="${r.gainPaise >= 0 ? 'up' : 'down'}">${signed(r.gainPaise)}</td></tr>`).join('')}
+          </tbody></table></div>` : '<p class="empty">Nothing yet. All your money is cash.</p>';
+
+      $('history').innerHTML = portfolio.trades.length ? `
+        <div class="table-box"><table>
+          <thead><tr><th scope="col">What</th><th scope="col">Price date</th><th scope="col">Shares</th>
+            <th scope="col">Price</th><th scope="col">Total</th></tr></thead>
+          <tbody>${portfolio.trades.slice().reverse().map((t) => `
+            <tr><td><span class="side ${t.side}-tag">${t.side}</span> <span class="name">${byId[t.symbol]?.name ?? t.symbol}</span></td>
+                <td>${t.date ? formatDate(t.date) : ''}</td>
+                <td>${shares(t.quantity)}</td>
+                <td>${rupees(t.pricePaise)}</td>
+                <td>${rupeesRound(t.totalPaise)}</td></tr>`).join('')}
+          </tbody></table></div>` : '<p class="empty">No trades yet.</p>';
+
+      renderQuote();
+    }
+
+    function renderQuote() {
+      const symbol = $('symbol').value;
+      const price = prices[symbol];
+      const held = portfolio.holdings[symbol];
+      $('sell-all').hidden = !held;
+      if (!price) { $('quote').textContent = ''; return; }
+      const parts = [`1 share costs ${rupees(price)}`];
+      const amount = parseRupees();
+      if (amount > 0) parts.push(`₹${inr0.format(amount)} buys ${shares(amount * 100 / price)} shares`);
+      if (held) parts.push(`you own ${shares(held.quantity)}, worth ${rupeesRound(Math.round(held.quantity * price))}`);
+      $('quote').textContent = parts.join(' · ');
+    }
+
+    function parseRupees() {
+      const n = Number($('rupees').value.replace(/[,₹\s]/g, ''));
+      return Number.isFinite(n) ? n : NaN;
+    }
+
+    function say(text, good) {
+      $('msg').textContent = text;
+      $('msg').className = 'msg ' + (good ? 'good' : 'bad');
+      $('msg').hidden = false;
+    }
+
+    // ---- placing orders ----
+    function trade(side, { all = false } = {}) {
+      const symbol = $('symbol').value;
+      const pricePaise = prices[symbol];
+      const held = portfolio.holdings[symbol];
+      let quantity;
+
+      if (all) {
+        quantity = held?.quantity ?? 0;
+      } else {
+        const amount = parseRupees();
+        if (!(amount > 0)) return say('Type how many rupees you want to ' + side + ', like 5000.', false);
+        quantity = (amount * 100) / pricePaise;
+        // Typing the exact rupee value of what you own can land a hair above it after
+        // rounding. That's still "sell it all", not a short sale.
+        if (side === 'sell' && held && quantity > held.quantity && quantity - held.quantity < 0.0001) {
+          quantity = held.quantity;
+        }
+      }
+
+      const order = { symbol, quantity, pricePaise, date: priceDate };
+      const result = side === 'buy' ? buy(portfolio, order) : sell(portfolio, order);
+      if (!result.ok) return say(result.reason, false);
+
+      portfolio = result.portfolio;
+      save();
+      const t = portfolio.trades.at(-1);
+      say(`${side === 'buy' ? 'Bought' : 'Sold'} ${shares(t.quantity)} ${byId[symbol]?.name ?? symbol} for ${rupees(t.totalPaise)}.`, true);
+      $('rupees').value = '';
+      render();
+    }
+
+    $('order').addEventListener('submit', (e) => { e.preventDefault(); trade('buy'); });
+    $('sell').addEventListener('click', () => trade('sell'));
+    $('sell-all').addEventListener('click', () => trade('sell', { all: true }));
+    $('symbol').addEventListener('change', () => { $('msg').hidden = true; renderQuote(); });
+    $('rupees').addEventListener('input', renderQuote);
+
+    // A confirm step built into the page, so one stray tap can't wipe it all.
+    const confirming = (on) => { $('reset').hidden = on; $('reset-yes').hidden = !on; $('reset-no').hidden = !on; };
+    $('reset').addEventListener('click', () => confirming(true));
+    $('reset-no').addEventListener('click', () => confirming(false));
+    $('reset-yes').addEventListener('click', () => {
+      portfolio = newPortfolio();
+      save();
+      confirming(false);
+      say('Fresh start: ₹1,00,000 in cash.', true);
+      render();
+    });
+
+    // ---- start up ----
+    async function start() {
+      showDataDate('./data/meta.json');
+      try {
+        const [stocks, forex] = await Promise.all([
+          fetch('./data/stocks.json', { cache: 'no-cache' }).then((r) => r.json()),
+          fetch('./data/forex.json', { cache: 'no-cache' }).then((r) => r.json()),
+        ]);
+        prices = pricesInPaise(stocks, forex);
+        priceDate = stocks.asOf ?? null;
+      } catch (error) {
+        console.error(error);
+        say('Could not load prices, so trading is paused. Try again in a minute.', false);
+        return;
+      }
+
+      // Something you own but have no price for today would break the totals, so say so.
+      const missing = Object.keys(portfolio.holdings).filter((s) => !prices[s]);
+      if (missing.length) {
+        say(`No price today for ${missing.join(', ')}, so totals are paused. Check back after tonight's update.`, false);
+        return;
+      }
+
+      $('symbol').innerHTML = ['<optgroup label="Index funds">', ...INSTRUMENTS.filter((i) => i.kind === 'fund'),
+        '</optgroup><optgroup label="Companies">', ...INSTRUMENTS.filter((i) => i.kind === 'stock'), '</optgroup>']
+        .map((i) => typeof i === 'string' ? i
+          : prices[i.symbol] ? `<option value="${i.symbol}">${i.name} (${i.symbol})</option>` : '')
+        .join('');
+      for (const id of ['symbol', 'rupees', 'buy', 'sell']) $(id).disabled = false;
+      render();
+    }
+
+    start();
+  </script>
+
+</body>
+</html>
