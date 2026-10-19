@@ -22,3 +22,4 @@
 - **cron** `30 2 * * *` means "minute 30, hour 2, every day". Five fields: minute, hour, day, month, weekday.
 - Networks fail for no reason, so anything running unattended should **retry** before giving up. Mine tries 3 times with longer waits. My first run lost 4 symbols to one blip; with retries it got all 20.
 - Prices are for **trading days**. Friday's close is still the latest on a Sunday — that's why the date says 9 October, not 12.
+- GitHub's schedule is **best effort**: my 02:30 UTC job actually started between 07:00 and 09:30 UTC. It still runs every night, just not on the dot.
