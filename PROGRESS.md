@@ -44,7 +44,9 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
 ## Session log
 - **12 Oct 2026** — setup + M1 + M2 + M3 in one sitting. Node 24.20.0 installed.
   Sahil signed off M1. Stopped here; M3's remaining check is calendar time, not work.
-- **19 Oct 2026** — M3 closed: six nightly runs in a row, all green. Starting M4.
+- **19 Oct 2026** — M3 closed: six nightly runs in a row, all green. M4 parts 1 and 2 built
+  and live. Stopped here. Waiting on: Sahil's 20 trades, Arjun's answer to the cron question
+  (`30 2 * * *` -> 03:15?), and whether he wants whole shares instead of part shares.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
