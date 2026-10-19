@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M4 — Paper trading core
-**Current part:** Not started — M4 part 1 is the buy/sell engine in `lib/portfolio.js`
+**Current part:** M4 part 2 — the trade page (`trade.html`)
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -21,8 +21,12 @@
   (`npm test`), `calculator.html` with four sliders, a Chart.js growth chart and the
   cost-of-waiting comparison. Node.js 24.20.0 (ARM64) installed.
 
+- **M4 part 1 — buy/sell engine** (19 Oct) — `lib/portfolio.js`: money in paise, fractional
+  shares to 6 decimals, friendly refusal messages, average cost kept on partial sells.
+  12 tests in `test/portfolio.test.js` including 200 random trades. `npm test` 17/17.
+
 ## Next step (exact)
-M4 Paper trading core: buy and sell the 20 instruments in `lib/universe.js` at the latest
+M4 part 2, `trade.html`: wire `lib/portfolio.js` to the page. Buy and sell the 20 instruments in `lib/universe.js` at the latest
 close from `data/stocks.json`, starting from 1,00,000 of pretend money. Holdings, cash and
 total value always visible; trade history; saved in the browser so a refresh does not wipe
 it. No borrowing, no short selling, no leverage.

@@ -23,3 +23,9 @@
 - Networks fail for no reason, so anything running unattended should **retry** before giving up. Mine tries 3 times with longer waits. My first run lost 4 symbols to one blip; with retries it got all 20.
 - Prices are for **trading days**. Friday's close is still the latest on a Sunday — that's why the date says 9 October, not 12.
 - GitHub's schedule is **best effort**: my 02:30 UTC job actually started between 07:00 and 09:30 UTC. It still runs every night, just not on the dot.
+
+## M4 — Paper trading core
+- **State** is everything the app has to remember: my cash, what I own, and every trade. Each trade makes a *new* state instead of changing the old one.
+- Computers are bad at decimals (`0.1 + 0.2` is `0.30000000000000004`), so my money is stored in whole **paise**. Whole numbers never drift.
+- An **edge case** is the weird input at the edges: buying with exactly all my cash, selling more than I own, a quantity of zero. Most bugs live there, so each one has a test.
+- A **random test** fires 200 random trades and checks the rules after every single one. It found a weak spot in my *test* before it found anything in my code.
