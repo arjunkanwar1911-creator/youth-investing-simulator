@@ -1,8 +1,8 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M4 — Paper trading core
-**Current part:** M4 part 3 — Sahil's 20 trades on the live link
+**Current milestone:** M5 — Risk and diversification
+**Current part:** M5 part 1 — not started
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -32,12 +32,16 @@
   ₹7,500 cost ₹7,500.01). Headless Edge drove 20 trades: total exact after every one,
   survives refresh, no errors at 390px.
 
+- **M4 closed** (20 Oct) — mutation check on `lib/compound.js` and `lib/portfolio.js`:
+  5 of 6 planted bugs caught; the missed one (`toMoney` rounding down) now has its own
+  test, 22/22. Sahil made 20 trades on the live link: no glitches, cash plus holdings always
+  equalled total. Build log entry added, strip at 4/16.
+
 ## Next step (exact)
-M4 part 3: Sahil makes 20 trades on the live trade page. If clean, close M4 (Build log,
-strip to 4/16, LEARNED question, WhatsApp update). Original brief for reference: buy and sell the 20 instruments in `lib/universe.js` at the latest
-close from `data/stocks.json`, starting from 1,00,000 of pretend money. Holdings, cash and
-total value always visible; trade history; saved in the browser so a refresh does not wipe
-it. No borrowing, no short selling, no leverage.
+Start M5 with the one-line "why it matters", then M5 part 1. Read the M5 section of PLAN.md
+(split by asset/sector/currency chart, volatility in plain words, diversification score
+0–100 with a gentle nudge). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?, and whole
+shares vs part shares (part shares is the current default).
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -47,6 +51,8 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
 - **19 Oct 2026** — M3 closed: six nightly runs in a row, all green. M4 parts 1 and 2 built
   and live. Stopped here. Waiting on: Sahil's 20 trades, Arjun's answer to the cron question
   (`30 2 * * *` -> 03:15?), and whether he wants whole shares instead of part shares.
+- **20 Oct 2026** — mutation check (5/6 caught, gap fixed with a new test). Sahil's 20
+  trades clean. M4 closed.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
@@ -56,7 +62,7 @@ over, and report progress as a ticked checklist.
 - [x] M1 Repo and live link
 - [x] M2 Compound interest calculator
 - [x] M3 Real market data, refreshed by itself
-- [ ] M4 Paper trading core
+- [x] M4 Paper trading core
 - [ ] M5 Risk and diversification
 - [ ] M6 Learn mode
 - [ ] M7 Move to a real app
