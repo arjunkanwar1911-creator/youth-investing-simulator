@@ -71,3 +71,8 @@ test('the yearly series has one row per year plus the starting line', () => {
     assert.ok(yearly[i].value > yearly[i - 1].value);
   }
 });
+
+test('toMoney rounds to the nearest paisa, up as well as down', () => {
+  assert.equal(toMoney(2.999), 3); // rounds up
+  assert.equal(toMoney(2.994), 2.99); // rounds down
+});

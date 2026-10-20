@@ -32,3 +32,4 @@
 - **localStorage** is a small notebook each website gets inside my browser. My portfolio is saved there, so a refresh doesn't wipe it, but it stays on that one browser only.
 - **Rounding adds up.** With shares rounded to 6 decimals, ₹7,500 of Apple cost ₹7,500.01. 8 decimals fixed it. Tiny errors matter when you're promising "it always adds up".
 - A **browser test** clicks the real buttons in a hidden browser. Mine did Sahil's 20 trades and caught the paisa bug before he did.
+- A **mutation check** plants a small bug on purpose to see if my tests notice. Rounding *down* instead of to the nearest paisa got past every test, because none of them used a number that rounds up. A test only protects the spot it actually looks at.
