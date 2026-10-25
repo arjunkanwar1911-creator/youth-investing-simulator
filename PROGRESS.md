@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M5 — Risk and diversification
-**Current part:** M5 part 2 — built, waiting on Arjun's check on the live link
+**Current part:** M5 part 3 — built, waiting on Arjun's check, then close M5
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -56,12 +56,19 @@
   normal day your shares go up or down by about ₹X", Calm (<1%) / Medium / Bumpy (>=2%),
   worst day, S&P 500 comparison. Browser test: Tesla 3.1% Bumpy, SPY 0.8% Calm, mix of 5
   0.7% Calm. Caught an apostrophe that broke the page script. `npm test` 42/42.
+  Arjun checked it live: "looks good".
+
+- **M5 part 3 — "How spread out is it?"** (25 Oct) — `diversification()` in
+  `lib/risk.js`: 60 points from the effective number of pieces (index fund = 20 pieces,
+  full marks at 15) + 40 from the effective number of sectors (fund spread over all, full
+  at 4). Cash ignored. One gentle tip, biggest problem first (one company >= 40%, one
+  sector >= 60%, no index fund, else "nicely spread"). Done-when in the browser at real
+  prices: one stock 0, five stocks 57, mix with SPY 94, same after refresh. 51/51.
 
 ## Next step (exact)
-Arjun tries part 2 on the live trade page (Ctrl+Shift+R first). Once he's happy: M5 part 3,
-the diversification score 0-100 with a gentle nudge ("70% of your money is in one stock"),
-then the Done-when check: one stock, five stocks, a mix with an index fund, same score
-every time. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+Arjun tries part 3 on the live trade page (Ctrl+Shift+R first). Then close M5: check
+Done-when on the live link, Build log entry, progress strip to 5/16, one LEARNED question,
+Sahil update box. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 

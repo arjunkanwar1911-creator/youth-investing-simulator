@@ -99,6 +99,18 @@
     .legend .pct { font-weight: 700; min-width: 3.5em; text-align: right; }
     .cash-line { margin: 12px 0 0; }
     .legend .rs { color: var(--muted); font-size: 14px; min-width: 6.5em; text-align: right; }
+    /* ---- how spread out is it ---- */
+    .score-row { display: flex; align-items: baseline; gap: 12px; margin: 0 0 10px; }
+    .score-num { font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .score-num small { font-size: 18px; color: var(--muted); font-weight: 600; }
+    .score-label { font-weight: 700; }
+    .bar { height: 10px; border-radius: 99px; background: var(--line-soft); overflow: hidden; margin: 0 0 14px; }
+    .bar div { height: 100%; border-radius: 99px; transition: width .3s; }
+    .low { color: var(--down); } .mid { color: var(--warn); } .high { color: var(--up); }
+    .bar .low { background: var(--down); } .bar .mid { background: #D97706; } .bar .high { background: var(--up); }
+    .tip { background: var(--blue-soft); color: var(--ink); border-radius: 10px; padding: 12px 14px; margin: 0; font-size: 15px; }
+    .tip b { color: var(--blue-dark); }
+
     /* ---- how bumpy is it ---- */
     .big { font-size: 20px; line-height: 1.4; margin: 0 0 14px; letter-spacing: -.01em; }
     .big strong { color: var(--blue-dark); font-variant-numeric: tabular-nums; }
@@ -203,6 +215,11 @@
     </section>
 
     <section>
+      <h2>How spread out is it?</h2>
+      <div id="spread"><p class="empty">Buy something to get your diversification score.</p></div>
+    </section>
+
+    <section>
       <h2>How bumpy is it?</h2>
       <div id="moves"><p class="empty">Buy something and you'll see how much it moves.</p></div>
     </section>
@@ -236,7 +253,7 @@
     import { showDataDate, formatDate } from './lib/asof.js';
     import { INSTRUMENTS } from './lib/universe.js';
     import { pricesInPaise } from './lib/prices.js';
-    import { allocation, volatility } from './lib/risk.js';
+    import { allocation, volatility, diversification } from './lib/risk.js';
     import { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE } from './lib/portfolio.js';
 
     // v2: 10 lakh and whole shares. Old v1 saves (1 lakh, part shares) are left alone.
@@ -308,6 +325,7 @@
           </tbody></table></div>` : '<p class="empty">No trades yet.</p>';
 
       renderSplit();
+      renderSpread();
       renderMoves();
       renderQuote();
     }
@@ -362,6 +380,22 @@
         for (const other of document.querySelectorAll('[data-split]')) other.setAttribute('aria-pressed', String(other === b));
         renderSplit();
       });
+    }
+
+    // ---- how spread out is it ----
+    function renderSpread() {
+      const d = diversification(portfolio, prices);
+      if (!d) {
+        $('spread').innerHTML = '<p class="empty">Buy something to get your diversification score.</p>';
+        return;
+      }
+      const tone = d.score >= 75 ? 'high' : d.score >= 40 ? 'mid' : 'low';
+      $('spread').innerHTML = `
+        <div class="score-row"><span class="score-num ${tone}">${d.score}<small> / 100</small></span>
+          <span class="score-label ${tone}">${d.label}</span></div>
+        <div class="bar" role="img" aria-label="Diversification score ${d.score} out of 100"><div class="${tone}" style="width:${d.score}%"></div></div>
+        <p class="tip"><b>Tip:</b> ${d.nudge}</p>
+        <p class="note" style="margin-top:12px">More different companies and more sectors give a higher score. An index fund counts as lots of companies. Cash doesn't count.</p>`;
     }
 
     // ---- how bumpy is it ----

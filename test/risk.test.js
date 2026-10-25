@@ -162,3 +162,75 @@ test('real prices: an S&P 500 fund is Calm, Tesla is Bumpy, and the answer never
   assert.equal(tsla.level, 'Bumpy');
   assert.deepEqual(volatility(own({ TSLA: holding(1, 1) }), real, realForex), tsla);
 });
+
+// ---- part 3: the diversification score ----
+import { diversification } from '../lib/risk.js';
+
+// Every share costs ₹1,000 here, so the number of shares is the weight.
+const flat = new Proxy({}, { get: () => 100000 });
+const shares = (map) => own(Object.fromEntries(Object.entries(map).map(([s, q]) => [s, holding(q, 100000)])));
+
+test('nothing invested means no score yet', () => {
+  assert.equal(diversification(newPortfolio(), flat), null);
+});
+
+test('Done when 1: one stock scores low', () => {
+  const d = diversification(shares({ TSLA: 10 }), flat);
+  assert.equal(d.score, 0);
+  assert.equal(d.label, 'Not spread out');
+  assert.match(d.nudge, /100% of what you've invested is in one company \(Tesla\)/);
+});
+
+test('Done when 2: five stocks in five sectors score in the middle', () => {
+  const d = diversification(shares({ AAPL: 10, GOOGL: 10, KO: 10, JNJ: 10, V: 10 }), flat);
+  // 5 equal pieces: 60 × 4/14 = 17.1. 5 sectors: the full 40. Total 57.
+  assert.equal(d.score, 57);
+  assert.equal(d.label, 'Getting there');
+  assert.match(d.nudge, /index fund/);
+});
+
+test('Done when 3: a mix with an index fund scores high', () => {
+  // Half in the S&P 500, the rest in four different sectors.
+  const d = diversification(shares({ SPY: 40, AAPL: 10, KO: 10, JNJ: 10, V: 10 }), flat);
+  assert.ok(d.score >= 75 && d.score <= 100, d.score);
+  assert.equal(d.label, 'Well spread');
+  assert.match(d.nudge, /Nicely spread out/);
+});
+
+test('Done when: the same portfolio gets the same score every time', () => {
+  for (const p of [shares({ TSLA: 10 }), shares({ AAPL: 10, GOOGL: 10, KO: 10, JNJ: 10, V: 10 }), shares({ SPY: 40, AAPL: 10, KO: 10, JNJ: 10, V: 10 })]) {
+    const first = diversification(p, flat);
+    for (let i = 0; i < 50; i++) assert.deepEqual(diversification(p, flat), first);
+  }
+});
+
+test('five stocks all in one sector score lower than five in different sectors', () => {
+  const sameSector = diversification(shares({ AMZN: 10, TSLA: 10, NKE: 10, SBUX: 10, MCD: 10 }), flat);
+  const spread = diversification(shares({ AAPL: 10, GOOGL: 10, KO: 10, JNJ: 10, V: 10 }), flat);
+  assert.ok(sameSector.score < spread.score, `${sameSector.score} vs ${spread.score}`);
+  assert.match(sameSector.nudge, /100% of what you've invested is in Consumer/);
+});
+
+test('one big stock and four tiny ones is not really spread out', () => {
+  const d = diversification(shares({ TSLA: 70, AAPL: 5, KO: 5, JNJ: 10, V: 10 }), flat);
+  assert.ok(d.score < 40, d.score);
+  assert.match(d.nudge, /^70% of what you've invested is in one company \(Tesla\)/);
+});
+
+test('cash does not change the score', () => {
+  const p = shares({ AAPL: 10, KO: 10 });
+  assert.deepEqual(diversification({ ...p, cashPaise: 90000000 }, flat), diversification(p, flat));
+});
+
+test('the score is always a whole number from 0 to 100', () => {
+  let seed = 11;
+  const rand = (n) => (seed = (seed * 16807) % 2147483647) % n;
+  const symbols = ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'KO', 'JNJ', 'V', 'SPY', 'QQQ', 'INDA'];
+  for (let i = 0; i < 300; i++) {
+    const map = {};
+    for (const s of symbols) if (rand(3) === 0) map[s] = 1 + rand(30);
+    if (!Object.keys(map).length) continue;
+    const { score } = diversification(shares(map), flat);
+    assert.ok(Number.isInteger(score) && score >= 0 && score <= 100, String(score));
+  }
+});

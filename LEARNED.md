@@ -44,3 +44,5 @@
 - **Standard deviation** measures how far a typical day lands from the average day. Small means calm, big means bumpy.
 - A mix of 5 different shares moved *less* per rupee than any single one of them, because when one falls another often doesn't. That is **diversification**.
 - An apostrophe inside text wrapped in single quotes (`'you'll'`) ends the text early and breaks the whole page. The browser test caught it before anyone saw it.
+- A **diversification score** turns "how spread out am I?" into one number. Mine gives 60 points for owning many different things and 40 for being in different sectors. One stock scores 0, five stocks 57, a mix with an index fund 94.
+- The **effective number** of things you own counts big pieces more. 4 equal pieces counts as 4, but one huge piece and three tiny ones counts as about 1.
