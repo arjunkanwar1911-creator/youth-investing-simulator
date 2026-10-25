@@ -37,7 +37,7 @@ test('if I own only Apple and no cash, it is 100% one company, tech, dollars', (
 test('two tech stocks land in one Technology slice, not two', () => {
   // ₹3,00,000 Apple + ₹4,00,000 Microsoft + ₹3,00,000 Coca-Cola
   const p = { cashPaise: 30000000, holdings: { AAPL: holding(10, prices.AAPL), MSFT: holding(10, prices.MSFT), KO: holding(50, prices.KO) }, trades: [] };
-  assert.deepEqual(labels(allocation(p, prices).sector), [['Technology', 70], ['Consumer', 30]]);
+  assert.deepEqual(labels(allocation(p, prices).sector), [['Technology', 70], ['Everyday needs', 30]]);
 });
 
 test('an index fund counts as an index fund, not a company', () => {
@@ -85,4 +85,16 @@ test('the whole-number percents always add up to exactly 100', () => {
       assert.equal(allocation(r, prices)[split].reduce((s, g) => s + g.percent, 0), 100);
     }
   }
+});
+
+test('sectors follow the real world: Google is Internet & Media, Coca-Cola is Everyday needs', () => {
+  const sectorOf = (symbol) => {
+    const p = { cashPaise: 0, holdings: { [symbol]: holding(1, 100) }, trades: [] };
+    return allocation(p, { [symbol]: 100 }).sector[0].label;
+  };
+  assert.equal(sectorOf('AAPL'), 'Technology');
+  assert.equal(sectorOf('GOOGL'), 'Internet & Media');
+  assert.equal(sectorOf('NFLX'), 'Internet & Media');
+  assert.equal(sectorOf('TSLA'), 'Consumer');
+  assert.equal(sectorOf('KO'), 'Everyday needs');
 });
