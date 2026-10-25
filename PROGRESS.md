@@ -1,8 +1,8 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M5 — Risk and diversification
-**Current part:** M5 part 3 — built, waiting on Arjun's check, then close M5
+**Current milestone:** M6 — Learn mode
+**Current part:** M6 part 1 — not started
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -65,10 +65,14 @@
   sector >= 60%, no index fund, else "nicely spread"). Done-when in the browser at real
   prices: one stock 0, five stocks 57, mix with SPY 94, same after refresh. 51/51.
 
+- **M5 closed** (25 Oct) — Arjun checked part 3 live. Done-when re-run on the live link:
+  0 / 57 / 94, same after refresh, no errors. Build log entry added, strip at 5/16.
+
 ## Next step (exact)
-Arjun tries part 3 on the live trade page (Ctrl+Shift+R first). Then close M5: check
-Done-when on the live link, Build log entry, progress strip to 5/16, one LEARNED question,
-Sahil update box. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+M6 Learn mode, part 1: one line on why it matters, explain the plan in plain words, split
+into parts (5 lessons under 5 minutes each, each with a quiz; starter quiz before lesson 1,
+same quiz after lesson 5; "now try it" links). Arjun's one choice could be the lesson order
+or a lesson's example. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -81,6 +85,7 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
 - **20 Oct 2026** — mutation check (5/6 caught, gap fixed with a new test). Sahil's 20
   trades clean. M4 closed.
 - **25 Oct 2026** — M4 rule change: whole shares, 10 lakh, 25% per-buy cap. 26/26 green.
+  Then all of M5 in three parts, each checked by Arjun live. M5 closed. 51/51.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
@@ -91,7 +96,7 @@ over, and report progress as a ticked checklist.
 - [x] M2 Compound interest calculator
 - [x] M3 Real market data, refreshed by itself
 - [x] M4 Paper trading core
-- [ ] M5 Risk and diversification
+- [x] M5 Risk and diversification
 - [ ] M6 Learn mode
 - [ ] M7 Move to a real app
 - [ ] M8 Accounts with Google sign in
