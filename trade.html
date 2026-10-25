@@ -97,6 +97,7 @@
       padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
     .legend .dot { width: 12px; height: 12px; border-radius: 3px; }
     .legend .pct { font-weight: 700; min-width: 3.5em; text-align: right; }
+    .cash-line { margin: 12px 0 0; }
     .legend .rs { color: var(--muted); font-size: 14px; min-width: 6.5em; text-align: right; }
     .reset-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 14px; color: var(--muted); }
 
@@ -176,7 +177,7 @@
 
     <section>
       <h2>Where your money is</h2>
-      <p class="note">Your whole portfolio, cash included, split three ways.</p>
+      <p class="note">The money you've put into shares, split three ways. Cash isn't on the ring.</p>
       <div class="tabs" role="group" aria-label="Split by">
         <button type="button" data-split="kind" aria-pressed="true">Asset type</button>
         <button type="button" data-split="sector" aria-pressed="false">Sector</button>
@@ -184,7 +185,8 @@
       </div>
       <div class="split">
         <div class="donut"><canvas id="split-chart" role="img" aria-label="Chart of where your money is"></canvas></div>
-        <ul class="legend" id="split-legend"></ul>
+        <div><ul class="legend" id="split-legend"></ul>
+          <p class="note cash-line" id="split-cash"></p></div>
       </div>
     </section>
 
@@ -293,17 +295,22 @@
     // ---- where your money is ----
     // Fixed colours, so "Technology" is the same blue every time you look.
     const COLOURS = {
-      Cash: '#94A3B8', INR: '#94A3B8', USD: '#2563EB',
+      USD: '#2563EB',
       'Single companies': '#F59E0B', 'Index funds': '#0D9488',
       Technology: '#2563EB', Consumer: '#F59E0B', Healthcare: '#10B981',
       Financials: '#8B5CF6', Diversified: '#0D9488',
     };
-    const NAMES = { INR: 'Rupees (your cash)', USD: 'US dollars' };
+    const NAMES = { USD: 'US dollars' };
     let split = 'kind';
     let chart = null;
 
     function renderSplit() {
-      const groups = allocation(portfolio, prices)[split];
+      const a = allocation(portfolio, prices);
+      const groups = a[split];
+      $('split-cash').textContent = groups.length
+        ? `Not invested: ${rupeesRound(a.cashPaise)} cash.`
+        : 'Nothing invested yet. Buy something and your split shows up here.';
+      $('split-chart').parentElement.hidden = !groups.length;
       const colour = (g) => COLOURS[g.label] ?? '#CBD5E1';
       const name = (g) => NAMES[g.label] ?? g.label;
       $('split-legend').innerHTML = groups.map((g) => `
