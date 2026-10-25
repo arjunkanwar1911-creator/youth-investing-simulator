@@ -86,6 +86,18 @@
     .side.buy-tag { background: var(--blue-soft); color: var(--blue-dark); }
     .side.sell-tag { background: var(--line-soft); color: var(--ink-2); }
     .empty { color: var(--muted); font-size: 15px; margin: 0; }
+    /* ---- where your money is ---- */
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+    .tabs button { padding: 6px 14px; font-size: 14px; font-weight: 600; background: #fff; color: var(--ink-2); border-color: var(--line); }
+    .tabs button[aria-pressed="true"] { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .split { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: center; }
+    .donut { position: relative; height: 200px; }
+    .legend { list-style: none; margin: 0; padding: 0; }
+    .legend li { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 10px; align-items: center;
+      padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
+    .legend .dot { width: 12px; height: 12px; border-radius: 3px; }
+    .legend .pct { font-weight: 700; min-width: 3.5em; text-align: right; }
+    .legend .rs { color: var(--muted); font-size: 14px; min-width: 6.5em; text-align: right; }
     .reset-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 14px; color: var(--muted); }
 
     footer { padding-block: 26px 44px; font-size: 13px; color: var(--muted); }
@@ -103,6 +115,8 @@
       .money .label { font-size: 11px; letter-spacing: .04em; }
       th, td { padding: 8px 6px; font-size: 14px; }
       .wide-only { display: none; }
+      .split { grid-template-columns: 1fr; }
+      .donut { height: 180px; }
     }
   </style>
 </head>
@@ -161,6 +175,20 @@
     </section>
 
     <section>
+      <h2>Where your money is</h2>
+      <p class="note">Your whole portfolio, cash included, split three ways.</p>
+      <div class="tabs" role="group" aria-label="Split by">
+        <button type="button" data-split="kind" aria-pressed="true">Asset type</button>
+        <button type="button" data-split="sector" aria-pressed="false">Sector</button>
+        <button type="button" data-split="currency" aria-pressed="false">Currency</button>
+      </div>
+      <div class="split">
+        <div class="donut"><canvas id="split-chart" role="img" aria-label="Chart of where your money is"></canvas></div>
+        <ul class="legend" id="split-legend"></ul>
+      </div>
+    </section>
+
+    <section>
       <h2>Trade history</h2>
       <div id="history"><p class="empty">No trades yet.</p></div>
     </section>
@@ -184,10 +212,12 @@
     </footer>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
   <script type="module">
     import { showDataDate, formatDate } from './lib/asof.js';
     import { INSTRUMENTS } from './lib/universe.js';
     import { pricesInPaise } from './lib/prices.js';
+    import { allocation } from './lib/risk.js';
     import { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE } from './lib/portfolio.js';
 
     // v2: 10 lakh and whole shares. Old v1 saves (1 lakh, part shares) are left alone.
@@ -256,7 +286,54 @@
                 <td>${rupeesRound(t.totalPaise)}</td></tr>`).join('')}
           </tbody></table></div>` : '<p class="empty">No trades yet.</p>';
 
+      renderSplit();
       renderQuote();
+    }
+
+    // ---- where your money is ----
+    // Fixed colours, so "Technology" is the same blue every time you look.
+    const COLOURS = {
+      Cash: '#94A3B8', INR: '#94A3B8', USD: '#2563EB',
+      'Single companies': '#F59E0B', 'Index funds': '#0D9488',
+      Technology: '#2563EB', Consumer: '#F59E0B', Healthcare: '#10B981',
+      Financials: '#8B5CF6', Diversified: '#0D9488',
+    };
+    const NAMES = { INR: 'Rupees (your cash)', USD: 'US dollars' };
+    let split = 'kind';
+    let chart = null;
+
+    function renderSplit() {
+      const groups = allocation(portfolio, prices)[split];
+      const colour = (g) => COLOURS[g.label] ?? '#CBD5E1';
+      const name = (g) => NAMES[g.label] ?? g.label;
+      $('split-legend').innerHTML = groups.map((g) => `
+        <li><span class="dot" style="background:${colour(g)}"></span><span>${name(g)}</span>
+            <span class="pct">${g.percent}%</span><span class="rs">${rupeesRound(g.paise)}</span></li>`).join('');
+
+      if (!window.Chart) return; // the list above still tells the whole story
+      const data = {
+        labels: groups.map(name),
+        datasets: [{ data: groups.map((g) => g.paise), backgroundColor: groups.map(colour), borderColor: '#fff', borderWidth: 2 }],
+      };
+      const tooltip = { callbacks: { label: (c) => ` ${c.label}: ${groups[c.dataIndex].percent}%` } };
+      if (chart) {
+        chart.data = data;
+        chart.options.plugins.tooltip = tooltip;
+        chart.update();
+        return;
+      }
+      chart = new Chart($('split-chart'), {
+        type: 'doughnut', data,
+        options: { cutout: '62%', maintainAspectRatio: false, animation: { duration: 300 }, plugins: { legend: { display: false }, tooltip } },
+      });
+    }
+
+    for (const b of document.querySelectorAll('[data-split]')) {
+      b.addEventListener('click', () => {
+        split = b.dataset.split;
+        for (const other of document.querySelectorAll('[data-split]')) other.setAttribute('aria-pressed', String(other === b));
+        renderSplit();
+      });
     }
 
     function renderQuote() {

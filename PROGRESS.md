@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M5 — Risk and diversification
-**Current part:** M5 part 1 — not started
+**Current part:** M5 part 1 — built, waiting on Arjun's check on the live link
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -42,11 +42,17 @@
   25% of total value. Trade page orders in shares, save key `yis.portfolio.v2`.
   `npm test` 26/26, checked by Arjun in the browser.
 
+- **M5 part 1 — "Where your money is" chart** (25 Oct) — `lib/risk.js` `allocation()`
+  splits total value (cash included) by asset type, sector and currency, with whole
+  percents that always add to 100 (largest remainder). Doughnut + legend on `trade.html`
+  with three tabs. Browser test caught 101% before the fix. `npm test` 33/33. Arjun asked
+  to test each part himself before moving on, and said the "what should happen if"
+  question was not useful, so Claude writes the checks.
+
 ## Next step (exact)
-M5 part 1 (allocation chart): explain the plan and files, wait for Arjun's go, get his
-3 "what should happen if" checks. Read the M5 section of PLAN.md
-(split by asset/sector/currency chart, volatility in plain words, diversification score
-0–100 with a gentle nudge). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+Arjun tries part 1 on the live trade page. Once he's happy: M5 part 2, volatility in plain
+words (daily moves from the 120 days of history, standard deviation, "on a normal day your
+portfolio moves about ₹X"). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 

@@ -36,3 +36,5 @@
 - A **position limit** caps how big one buy can be. Mine is a quarter of my total, so going all in on one stock takes four separate decisions instead of one tap.
 - Rules fight each other: whole shares plus a ₹25,000 cap meant the index funds (₹72,000 a share) could never be bought. Checking the real prices *before* coding caught it, and 10 lakh fixed it.
 - When the rules change, old saved data may not fit them. Giving the save a **new version name** (`v2`) means old part-share portfolios start fresh instead of breaking.
+- **"rejected (fetch first)"** means GitHub has commits I don't have yet (the nightly price robot). `git pull --rebase` downloads them and puts my commit on top, then the push works.
+- Rounding each slice on its own can make percents add up to 101. The **largest remainder** trick rounds everything down, then gives the spare points to the slices closest to rounding up, so it is always exactly 100.
