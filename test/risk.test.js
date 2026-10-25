@@ -98,3 +98,67 @@ test('sectors follow the real world: Google is Internet & Media, Coca-Cola is Ev
   assert.equal(sectorOf('TSLA'), 'Consumer');
   assert.equal(sectorOf('KO'), 'Everyday needs');
 });
+
+// ---- part 2: how much it moves ----
+import { volatility } from '../lib/risk.js';
+import { readFileSync } from 'node:fs';
+
+const forex = { rates: { USD: { inr: 100 } } };
+// Builds a price history from daily moves, e.g. [+0.01, -0.01] -> 100, 101, 99.99
+const historyFrom = (moves, start = 100) => {
+  const closes = [start];
+  for (const m of moves) closes.push(closes.at(-1) * (1 + m));
+  return closes.map((close, i) => ({ date: `2026-01-${String(i + 1).padStart(2, '0')}`, close })).reverse(); // newest first, like the real file
+};
+const own = (holdings) => ({ cashPaise: 0, holdings, trades: [] });
+
+test('no shares means nothing to measure', () => {
+  assert.equal(volatility(newPortfolio(), { prices: {} }, forex), null);
+});
+
+test('a price that never changes moves 0% a day and is Calm', () => {
+  const v = volatility(own({ KO: holding(10, 10000) }), { prices: { KO: { history: historyFrom(Array(20).fill(0)) } } }, forex);
+  assert.equal(v.dailyPercent, 0);
+  assert.equal(v.dailyPaise, 0);
+  assert.equal(v.level, 'Calm');
+});
+
+test('up 1%, down 1%, up 1%... is a normal day of exactly 1%', () => {
+  const v = volatility(own({ KO: holding(10, 10000) }), { prices: { KO: { history: historyFrom(Array(10).fill([0.01, -0.01]).flat()) } } }, forex);
+  assert.ok(Math.abs(v.dailyPercent - 1) < 1e-9, v.dailyPercent);
+  assert.equal(v.level, 'Medium');
+  assert.equal(v.days, 20);
+});
+
+test('the rupee amount is the normal-day percent of what your shares are worth today', () => {
+  // Each up-down pair is ×1.01 ×0.99 = 0.9999, so after 10 pairs the price is $99.90.
+  // 10 shares × $99.90 × ₹100 = ₹99,900, and 1% of that is ₹999.00.
+  const v = volatility(own({ KO: holding(10, 10000) }), { prices: { KO: { history: historyFrom(Array(10).fill([0.01, -0.01]).flat()) } } }, forex);
+  assert.equal(v.dailyPaise, 99900);
+});
+
+test('the worst day is the biggest fall, with its date', () => {
+  const v = volatility(own({ KO: holding(1, 10000) }), { prices: { KO: { history: historyFrom([0.01, -0.05, 0.02, -0.01]) } } }, forex);
+  assert.equal(v.worst.date, '2026-01-03');
+  assert.ok(Math.abs(v.worst.percent + 5) < 1e-9);
+  assert.ok(v.worst.paise < 0);
+});
+
+test('two shares that move opposite ways calm each other down', () => {
+  const zig = Array(10).fill([0.02, -0.02]).flat();
+  const zag = zig.map((m) => -m);
+  const stocks = { prices: { AAPL: { history: historyFrom(zig) }, KO: { history: historyFrom(zag) } } };
+  const alone = volatility(own({ AAPL: holding(10, 10000) }), stocks, forex).dailyPercent;
+  const together = volatility(own({ AAPL: holding(10, 10000), KO: holding(10, 10000) }), stocks, forex).dailyPercent;
+  assert.ok(together < alone / 4, `${together} should be much less than ${alone}`);
+});
+
+test('real prices: an S&P 500 fund is Calm, Tesla is Bumpy, and the answer never changes', () => {
+  const real = JSON.parse(readFileSync(new URL('../data/stocks.json', import.meta.url)));
+  const realForex = JSON.parse(readFileSync(new URL('../data/forex.json', import.meta.url)));
+  const spy = volatility(own({ SPY: holding(1, 1) }), real, realForex);
+  const tsla = volatility(own({ TSLA: holding(1, 1) }), real, realForex);
+  assert.equal(spy.level, 'Calm');
+  assert.equal(tsla.level, 'Bumpy');
+  assert.deepEqual(volatility(own({ TSLA: holding(1, 1) }), real, realForex), tsla);
+});

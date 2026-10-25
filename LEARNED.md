@@ -40,3 +40,7 @@
 - Rounding each slice on its own can make percents add up to 101. The **largest remainder** trick rounds everything down, then gives the spare points to the slices closest to rounding up, so it is always exactly 100.
 - Browsers keep a **saved copy** of a site so it opens faster, so after an update I might see the old page. **Ctrl + Shift + R** fetches a fresh copy.
 - A **sector** is the kind of business a company is in. The real world uses a list of 11 called GICS. I use simpler names, like "Everyday needs" for Coca-Cola, because people keep buying it even in bad times.
+- **Volatility** is how much something moves on a normal day. Tesla moves about 3% a day, an S&P 500 fund about 0.8%.
+- **Standard deviation** measures how far a typical day lands from the average day. Small means calm, big means bumpy.
+- A mix of 5 different shares moved *less* per rupee than any single one of them, because when one falls another often doesn't. That is **diversification**.
+- An apostrophe inside text wrapped in single quotes (`'you'll'`) ends the text early and breaks the whole page. The browser test caught it before anyone saw it.

@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M5 — Risk and diversification
-**Current part:** M5 part 1 — built, waiting on Arjun's check on the live link
+**Current part:** M5 part 2 — built, waiting on Arjun's check on the live link
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -47,12 +47,21 @@
   percents that always add to 100 (largest remainder). Doughnut + legend on `trade.html`
   with three tabs. Browser test caught 101% before the fix. `npm test` 33/33. Arjun asked
   to test each part himself before moving on, and said the "what should happen if"
-  question was not useful, so Claude writes the checks.
+  question was not useful, so Claude writes the checks. Then, on Arjun's call: cash taken
+  off the ring (shown as its own line), and simple sector labels with "Internet & Media"
+  (Google, Meta, Netflix, Disney) and "Everyday needs" (Coca-Cola). Arjun checked it live.
+
+- **M5 part 2 — "How bumpy is it?"** (25 Oct) — `volatility()` in `lib/risk.js`: today's
+  holdings priced over the 120-day history, standard deviation of daily moves -> "on a
+  normal day your shares go up or down by about ₹X", Calm (<1%) / Medium / Bumpy (>=2%),
+  worst day, S&P 500 comparison. Browser test: Tesla 3.1% Bumpy, SPY 0.8% Calm, mix of 5
+  0.7% Calm. Caught an apostrophe that broke the page script. `npm test` 42/42.
 
 ## Next step (exact)
-Arjun tries part 1 on the live trade page. Once he's happy: M5 part 2, volatility in plain
-words (daily moves from the 120 days of history, standard deviation, "on a normal day your
-portfolio moves about ₹X"). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+Arjun tries part 2 on the live trade page (Ctrl+Shift+R first). Once he's happy: M5 part 3,
+the diversification score 0-100 with a gentle nudge ("70% of your money is in one stock"),
+then the Done-when check: one stock, five stocks, a mix with an index fund, same score
+every time. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 

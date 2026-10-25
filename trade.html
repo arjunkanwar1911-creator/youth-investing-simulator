@@ -99,6 +99,17 @@
     .legend .pct { font-weight: 700; min-width: 3.5em; text-align: right; }
     .cash-line { margin: 12px 0 0; }
     .legend .rs { color: var(--muted); font-size: 14px; min-width: 6.5em; text-align: right; }
+    /* ---- how bumpy is it ---- */
+    .big { font-size: 20px; line-height: 1.4; margin: 0 0 14px; letter-spacing: -.01em; }
+    .big strong { color: var(--blue-dark); font-variant-numeric: tabular-nums; }
+    .levels { display: flex; gap: 6px; margin: 0 0 14px; }
+    .levels span { flex: 1; text-align: center; padding: 7px 0; border-radius: 8px; font-size: 14px; font-weight: 700;
+      background: var(--line-soft); color: var(--muted); }
+    .levels .on.Calm { background: #ECFDF3; color: var(--up); outline: 2px solid var(--up); }
+    .levels .on.Medium { background: var(--warn-bg); color: var(--warn); outline: 2px solid var(--warn); }
+    .levels .on.Bumpy { background: #FEF3F2; color: var(--down); outline: 2px solid var(--down); }
+    .moves-facts { margin: 0; padding: 0; list-style: none; font-size: 15px; color: var(--ink-2); }
+    .moves-facts li { padding: 6px 0; border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
     .reset-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 14px; color: var(--muted); }
 
     footer { padding-block: 26px 44px; font-size: 13px; color: var(--muted); }
@@ -117,6 +128,7 @@
       th, td { padding: 8px 6px; font-size: 14px; }
       .wide-only { display: none; }
       .split { grid-template-columns: 1fr; }
+      .big { font-size: 18px; }
       .donut { height: 180px; }
     }
   </style>
@@ -191,6 +203,11 @@
     </section>
 
     <section>
+      <h2>How bumpy is it?</h2>
+      <div id="moves"><p class="empty">Buy something and you'll see how much it moves.</p></div>
+    </section>
+
+    <section>
       <h2>Trade history</h2>
       <div id="history"><p class="empty">No trades yet.</p></div>
     </section>
@@ -219,7 +236,7 @@
     import { showDataDate, formatDate } from './lib/asof.js';
     import { INSTRUMENTS } from './lib/universe.js';
     import { pricesInPaise } from './lib/prices.js';
-    import { allocation } from './lib/risk.js';
+    import { allocation, volatility } from './lib/risk.js';
     import { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE } from './lib/portfolio.js';
 
     // v2: 10 lakh and whole shares. Old v1 saves (1 lakh, part shares) are left alone.
@@ -236,6 +253,8 @@
 
     let prices = {};
     let priceDate = null;
+    let stocks = null;   // full price history, for "how bumpy is it"
+    let forex = null;
     let portfolio = load();
 
     // ---- saving in the browser ----
@@ -289,6 +308,7 @@
           </tbody></table></div>` : '<p class="empty">No trades yet.</p>';
 
       renderSplit();
+      renderMoves();
       renderQuote();
     }
 
@@ -342,6 +362,32 @@
         for (const other of document.querySelectorAll('[data-split]')) other.setAttribute('aria-pressed', String(other === b));
         renderSplit();
       });
+    }
+
+    // ---- how bumpy is it ----
+    const LEVEL_WORDS = {
+      Calm: 'Calm: small moves, like an index fund.',
+      Medium: 'Medium: some ups and downs, like one steady big company.',
+      Bumpy: 'Bumpy: big swings. Exciting, but it can drop fast.',
+    };
+
+    function renderMoves() {
+      const v = stocks && volatility(portfolio, stocks, forex);
+      if (!v) {
+        $('moves').innerHTML = "<p class='empty'>Buy something and you'll see how much it moves.</p>";
+        return;
+      }
+      const spy = volatility({ holdings: { SPY: { quantity: 1 } } }, stocks, forex);
+      const months = Math.round(v.days / 21);
+      $('moves').innerHTML = `
+        <p class="big">On a normal day, your shares go up or down by about <strong>${rupeesRound(v.dailyPaise)}</strong>.</p>
+        <div class="levels">${['Calm', 'Medium', 'Bumpy'].map((l) => `<span class="${l}${l === v.level ? ' on' : ''}">${l}</span>`).join('')}</div>
+        <ul class="moves-facts">
+          <li>${LEVEL_WORDS[v.level]}</li>
+          <li>That's about ${v.dailyPercent.toFixed(1)}% a day.${spy ? ` An S&P 500 fund moves about ${spy.dailyPercent.toFixed(1)}%.` : ''}</li>
+          <li>Worst day in the last ${months} months: <span class="down">${signed(v.worst.paise)}</span> on ${formatDate(v.worst.date)}.</li>
+        </ul>
+        <p class="note" style="margin-top:12px">Worked out from how the shares you own today moved over the last ${v.days} trading days.</p>`;
     }
 
     function renderQuote() {
@@ -418,7 +464,7 @@
     async function start() {
       showDataDate('./data/meta.json');
       try {
-        const [stocks, forex] = await Promise.all([
+        [stocks, forex] = await Promise.all([
           fetch('./data/stocks.json', { cache: 'no-cache' }).then((r) => r.json()),
           fetch('./data/forex.json', { cache: 'no-cache' }).then((r) => r.json()),
         ]);
