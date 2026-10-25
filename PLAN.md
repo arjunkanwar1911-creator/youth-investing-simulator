@@ -105,7 +105,8 @@ Paper trading that teaches, not paper trading that gambles.
 
 ## M4 Paper trading core
 
-Every learner starts with 1,00,000 of pretend money.
+Every learner starts with 10,00,000 of pretend money (changed from 1,00,000 on
+25 Oct 2026 so whole shares of every instrument fit under the 25% per-buy cap).
 
 - Buy and sell at the latest closing price; holdings, cash and total value always visible
 - Trade history with date, price and quantity

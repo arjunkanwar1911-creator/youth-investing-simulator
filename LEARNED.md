@@ -33,3 +33,6 @@
 - **Rounding adds up.** With shares rounded to 6 decimals, ₹7,500 of Apple cost ₹7,500.01. 8 decimals fixed it. Tiny errors matter when you're promising "it always adds up".
 - A **browser test** clicks the real buttons in a hidden browser. Mine did Sahil's 20 trades and caught the paisa bug before he did.
 - A **mutation check** plants a small bug on purpose to see if my tests notice. Rounding *down* instead of to the nearest paisa got past every test, because none of them used a number that rounds up. A test only protects the spot it actually looks at.
+- A **position limit** caps how big one buy can be. Mine is a quarter of my total, so going all in on one stock takes four separate decisions instead of one tap.
+- Rules fight each other: whole shares plus a ₹25,000 cap meant the index funds (₹72,000 a share) could never be bought. Checking the real prices *before* coding caught it, and 10 lakh fixed it.
+- When the rules change, old saved data may not fit them. Giving the save a **new version name** (`v2`) means old part-share portfolios start fresh instead of breaking.

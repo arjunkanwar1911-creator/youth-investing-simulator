@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trade — Youth Investing Simulator</title>
-  <meta name="description" content="Buy and sell real companies and index funds with 1,00,000 of pretend money.">
+  <meta name="description" content="Buy and sell real companies and index funds with 10,00,000 of pretend money.">
   <style>
     :root {
       --blue: #2563EB; --blue-dark: #1D4ED8; --blue-soft: #EFF6FF;
@@ -55,9 +55,7 @@
       border: 1px solid #CBD3DF; border-radius: 10px; padding: 10px 12px;
     }
     select:focus, input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
-    .amount { position: relative; }
-    .amount span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
-    .amount input { padding-left: 28px; font-variant-numeric: tabular-nums; }
+    #qty { font-variant-numeric: tabular-nums; }
     .quote { font-size: 14px; color: var(--muted); margin: 10px 0 0; min-height: 1.6em; font-variant-numeric: tabular-nums; }
     .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
     button {
@@ -114,9 +112,9 @@
     <div class="wrap">
       <a class="back" href="./">&larr; Youth Investing Simulator</a>
       <h1>Trade with pretend money</h1>
-      <p>You start with &#8377;1,00,000. Buy and sell real companies and index funds at
-         their latest closing price. You can buy part of a share, so &#8377;5,000 of
-         anything works.</p>
+      <p>You start with &#8377;10,00,000. Buy and sell real companies and index funds at
+         their latest closing price, in whole shares. One buy can be at most a quarter
+         of everything you have.</p>
       <span class="asof-chip" data-asof>Loading&hellip;</span>
     </div>
   </header>
@@ -143,10 +141,8 @@
             <select id="symbol" disabled><option>Loading prices&hellip;</option></select>
           </div>
           <div>
-            <label for="rupees">How much</label>
-            <div class="amount"><span>&#8377;</span>
-              <input id="rupees" inputmode="decimal" autocomplete="off" placeholder="5000" disabled>
-            </div>
+            <label for="qty">How many shares</label>
+            <input id="qty" inputmode="numeric" autocomplete="off" placeholder="2" disabled>
           </div>
         </div>
         <p class="quote" id="quote"></p>
@@ -172,7 +168,7 @@
     <section>
       <div class="reset-row">
         <span>Saved in this browser, so a refresh won't wipe it.</span>
-        <button type="button" class="ghost danger" id="reset">Start again with &#8377;1,00,000</button>
+        <button type="button" class="ghost danger" id="reset">Start again with &#8377;10,00,000</button>
         <button type="button" class="ghost danger" id="reset-yes" hidden>Yes, wipe everything</button>
         <button type="button" class="ghost" id="reset-no" hidden>Keep my portfolio</button>
       </div>
@@ -192,9 +188,10 @@
     import { showDataDate, formatDate } from './lib/asof.js';
     import { INSTRUMENTS } from './lib/universe.js';
     import { pricesInPaise } from './lib/prices.js';
-    import { newPortfolio, buy, sell, value, isPortfolio, STARTING_CASH_PAISE } from './lib/portfolio.js';
+    import { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE } from './lib/portfolio.js';
 
-    const SAVE_KEY = 'yis.portfolio.v1';
+    // v2: 10 lakh and whole shares. Old v1 saves (1 lakh, part shares) are left alone.
+    const SAVE_KEY = 'yis.portfolio.v2';
     const $ = (id) => document.getElementById(id);
     const byId = Object.fromEntries(INSTRUMENTS.map((i) => [i.symbol, i]));
 
@@ -269,14 +266,16 @@
       $('sell-all').hidden = !held;
       if (!price) { $('quote').textContent = ''; return; }
       const parts = [`1 share costs ${rupees(price)}`];
-      const amount = parseRupees();
-      if (amount > 0) parts.push(`₹${inr0.format(amount)} buys ${shares(amount * 100 / price)} shares`);
+      const qty = parseShares();
+      if (Number.isInteger(qty) && qty > 1) parts.push(`${qty} cost ${rupees(qty * price)}`);
+      const v = value(portfolio, prices);
+      parts.push(`you can buy up to ${Math.floor(Math.min(v.cashPaise, maxBuyPaise(v.totalPaise)) / price)} in one go`);
       if (held) parts.push(`you own ${shares(held.quantity)}, worth ${rupeesRound(Math.round(held.quantity * price))}`);
       $('quote').textContent = parts.join(' · ');
     }
 
-    function parseRupees() {
-      const n = Number($('rupees').value.replace(/[,₹\s]/g, ''));
+    function parseShares() {
+      const n = Number($('qty').value.replace(/[,\s]/g, ''));
       return Number.isFinite(n) ? n : NaN;
     }
 
@@ -296,25 +295,19 @@
       if (all) {
         quantity = held?.quantity ?? 0;
       } else {
-        const amount = parseRupees();
-        if (!(amount > 0)) return say('Type how many rupees you want to ' + side + ', like 5000.', false);
-        quantity = (amount * 100) / pricePaise;
-        // Typing the exact rupee value of what you own can land a hair above it after
-        // rounding. That's still "sell it all", not a short sale.
-        if (side === 'sell' && held && quantity > held.quantity && quantity - held.quantity < 0.0001) {
-          quantity = held.quantity;
-        }
+        quantity = parseShares();
+        if (!(quantity > 0)) return say('Type how many shares you want to ' + side + ', like 2.', false);
       }
 
       const order = { symbol, quantity, pricePaise, date: priceDate };
-      const result = side === 'buy' ? buy(portfolio, order) : sell(portfolio, order);
+      const result = side === 'buy' ? buy(portfolio, order, prices) : sell(portfolio, order);
       if (!result.ok) return say(result.reason, false);
 
       portfolio = result.portfolio;
       save();
       const t = portfolio.trades.at(-1);
       say(`${side === 'buy' ? 'Bought' : 'Sold'} ${shares(t.quantity)} ${byId[symbol]?.name ?? symbol} for ${rupees(t.totalPaise)}.`, true);
-      $('rupees').value = '';
+      $('qty').value = '';
       render();
     }
 
@@ -322,7 +315,7 @@
     $('sell').addEventListener('click', () => trade('sell'));
     $('sell-all').addEventListener('click', () => trade('sell', { all: true }));
     $('symbol').addEventListener('change', () => { $('msg').hidden = true; renderQuote(); });
-    $('rupees').addEventListener('input', renderQuote);
+    $('qty').addEventListener('input', renderQuote);
 
     // A confirm step built into the page, so one stray tap can't wipe it all.
     const confirming = (on) => { $('reset').hidden = on; $('reset-yes').hidden = !on; $('reset-no').hidden = !on; };
@@ -332,7 +325,7 @@
       portfolio = newPortfolio();
       save();
       confirming(false);
-      say('Fresh start: ₹1,00,000 in cash.', true);
+      say('Fresh start: ₹10,00,000 in cash.', true);
       render();
     });
 
@@ -364,7 +357,7 @@
         .map((i) => typeof i === 'string' ? i
           : prices[i.symbol] ? `<option value="${i.symbol}">${i.name} (${i.symbol})</option>` : '')
         .join('');
-      for (const id of ['symbol', 'rupees', 'buy', 'sell']) $(id).disabled = false;
+      for (const id of ['symbol', 'qty', 'buy', 'sell']) $(id).disabled = false;
       render();
     }
 

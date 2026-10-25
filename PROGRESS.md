@@ -37,11 +37,16 @@
   test, 22/22. Sahil made 20 trades on the live link: no glitches, cash plus holdings always
   equalled total. Build log entry added, strip at 4/16.
 
+- **M4 rule change** (25 Oct) — Arjun's choices: whole shares only, ₹10,00,000 to start
+  (was 1 lakh: whole shares + a 25% cap blocked the index funds), and no single buy over
+  25% of total value. Trade page orders in shares, save key `yis.portfolio.v2`.
+  `npm test` 26/26, checked by Arjun in the browser.
+
 ## Next step (exact)
-Start M5 with the one-line "why it matters", then M5 part 1. Read the M5 section of PLAN.md
+M5 part 1 (allocation chart): explain the plan and files, wait for Arjun's go, get his
+3 "what should happen if" checks. Read the M5 section of PLAN.md
 (split by asset/sector/currency chart, volatility in plain words, diversification score
-0–100 with a gentle nudge). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?, and whole
-shares vs part shares (part shares is the current default).
+0–100 with a gentle nudge). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -53,6 +58,7 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
   (`30 2 * * *` -> 03:15?), and whether he wants whole shares instead of part shares.
 - **20 Oct 2026** — mutation check (5/6 caught, gap fixed with a new test). Sahil's 20
   trades clean. M4 closed.
+- **25 Oct 2026** — M4 rule change: whole shares, 10 lakh, 25% per-buy cap. 26/26 green.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
