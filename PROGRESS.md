@@ -67,6 +67,7 @@
 
 - **M5 closed** (25 Oct) — Arjun checked part 3 live. Done-when re-run on the live link:
   0 / 57 / 94, same after refresh, no errors. Build log entry added, strip at 5/16.
+  27 Oct: LEARNED question asked (Claude explained the answer on request), update sent to Sahil.
 
 ## Next step (exact)
 M6 Learn mode, part 1: one line on why it matters, explain the plan in plain words, split
