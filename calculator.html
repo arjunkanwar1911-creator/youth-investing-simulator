@@ -118,6 +118,7 @@
       .chart-box { height: 280px; }
     }
   </style>
+  <link rel="stylesheet" href="tutorial.css">
 </head>
 <body>
 
@@ -152,7 +153,7 @@
           <input type="range" id="rate" min="0" max="20" step="0.5" value="8"
                  aria-describedby="rate-out">
         </div>
-        <div class="field">
+        <div class="field" data-tut="years">
           <label for="years">For how long</label>
           <div class="value" id="years-out">20 <small>years</small></div>
           <input type="range" id="years" min="1" max="50" step="1" value="20"
@@ -239,6 +240,8 @@
   <script type="module">
     import { project, costOfWaiting, toMoney } from './lib/compound.js';
     import { showDataDate } from './lib/asof.js';
+    import { mountTutorial } from './lib/tutorial-ui.js';
+    import { START_YEARS } from './lib/tutorial.js';
 
     showDataDate('./data/meta.json');
 
@@ -465,6 +468,10 @@
 
     Object.values(inputs).forEach((input) => input.addEventListener('input', render));
 
+    // ---- the guided tutorial (mission 1 happens here) ----
+    let tutorial = null;
+    inputs.years.addEventListener('input', () => tutorial?.check());
+
     const toggle = el('table-toggle');
     toggle.addEventListener('click', () => {
       const showing = !el('table-box').hidden;
@@ -474,6 +481,16 @@
     });
 
     render();
+
+    tutorial = mountTutorial({
+      page: 'calculator.html',
+      getContext: () => ({
+        years: Number(inputs.years.value),
+        plan: { startingAmount: Number(inputs.start.value), monthlyTopUp: Number(inputs.topup.value), yearlyReturn: Number(inputs.rate.value) / 100 },
+      }),
+      // Mission 1 starts with the slider at 5 years, so there is somewhere to drag it from.
+      prepare: () => { inputs.years.value = START_YEARS; inputs.years.dispatchEvent(new Event('input')); },
+    });
   </script>
 
 </body>

@@ -1,0 +1,41 @@
+/* The tutorial overlay: a dimmed screen with one lit-up control, and a coach card.
+   Uses the page's own colours (--blue, --ink, ...) with fallbacks. */
+/* The four blocks only catch clicks outside the lit-up control. They are see-through. */
+.tut-block { position: fixed; z-index: 1000; background: transparent; display: none; }
+/* The ring does the dimming: its huge shadow darkens everything outside it, so the
+   corners of the lit-up area are rounded instead of square. */
+.tut-ring {
+  position: fixed; z-index: 1001; pointer-events: none; display: none;
+  border: 3px solid #F59E0B; border-radius: 14px;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, .3), 0 0 0 100vmax rgba(15, 23, 42, .66);
+}
+.tut-coach {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 1002; background: #fff; color: var(--ink, #0F172A);
+  border-top: 3px solid var(--blue, #2563EB); box-shadow: 0 -8px 30px rgba(15, 23, 42, .22);
+  padding: 14px 0 calc(14px + env(safe-area-inset-bottom, 0px));
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  max-height: 55vh; overflow-y: auto;
+}
+.tut-inner { max-width: 820px; margin: 0 auto; padding: 0 20px; }
+.tut-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 6px; }
+.tut-dots { display: flex; gap: 6px; }
+.tut-dot { width: 12px; height: 12px; border-radius: 99px; border: 2px solid #CBD3DF; background: #fff; }
+.tut-dot.done { background: var(--up, #047857); border-color: var(--up, #047857); }
+.tut-dot.skipped { background: #E3E8EF; border-color: #CBD3DF; }
+.tut-dot.now { border-color: var(--blue, #2563EB); background: var(--blue-soft, #EFF6FF); }
+.tut-count { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted, #5A6578); }
+.tut-title { font-size: 19px; line-height: 1.25; margin: 0 0 4px; letter-spacing: -.01em; }
+.tut-goal, .tut-text { margin: 0 0 8px; }
+.tut-goal { font-weight: 600; }
+.tut-hint { margin: 0 0 8px; font-size: 14px; color: var(--muted, #5A6578); min-height: 1.5em; }
+.tut-safe { margin: 0 0 8px; font-size: 13px; color: var(--blue-dark, #1D4ED8); font-weight: 600; }
+.tut-facts { margin: 0 0 10px; padding: 9px 12px; background: var(--blue-soft, #EFF6FF); border-radius: 10px; font-size: 15px; font-weight: 600; }
+.tut-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.tut-btn {
+  font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; border: 0; border-radius: 10px;
+  padding: 10px 22px; background: var(--blue, #2563EB); color: #fff;
+}
+.tut-btn:hover { background: var(--blue-dark, #1D4ED8); }
+.tut-link { font: inherit; font-size: 14px; font-weight: 600; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--blue, #2563EB); }
+@media (prefers-reduced-motion: no-preference) { .tut-coach { animation: tut-up .2s ease-out; } }
+@keyframes tut-up { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }

@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M6 — Learn mode
-**Current part:** M6 part 1 — not started
+**Current part:** M6 built on branch `m6-tutorial` (29 Oct), waiting for Arjun to run `npm test`, check it in the browser, then commit and push
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -69,11 +69,30 @@
   0 / 57 / 94, same after refresh, no errors. Build log entry added, strip at 5/16.
   27 Oct: LEARNED question asked (Claude explained the answer on request), update sent to Sahil.
 
+- **M6 Learn mode, built as a guided tutorial** (29 Oct, branch `m6-tutorial`, not yet run by
+  Arjun, not committed). Plan change agreed with Arjun: instead of 5 text lessons, 5 missions
+  played inside the real app, each dimming the screen and lighting up one control; Continue only
+  unlocks once the step is really done. Forex is a second card inside mission 2; mission 5 uses a
+  new "last 120 days" chart on the trade page (Arjun chose chart over list). Missions: 1 calculator
+  years 5->20, 2 buy an index fund, 3 about 50,000 in one company (score red), 4 three sectors plus
+  an index fund (score green), 5 tap the biggest one-day drop. Same 6-question quiz before mission 1
+  and after mission 5, before vs after shown, badge only if no mission was skipped.
+  Practice wallet is its own key (`yis.tutorial.wallet.v1`), starts at 10 lakh, reset for missions
+  2 and 3, thrown away when the tutorial ends. Progress: `yis.tutorial.progress.v1`.
+  New: `lib/quiz.js`, `lib/tutorial.js`, `lib/tutorial-ui.js`, `tutorial.css`, `learn.html`,
+  `test/quiz.test.js`, `test/tutorial.test.js`; changed: `calculator.html`, `trade.html`,
+  `index.html` (link), `lib/portfolio.js` (`PORTFOLIO_KEY`), `lib/risk.js` (`biggestDrop`).
+  Checked in headless Edge at 390px: 61 of 62 browser checks passed (the 62nd was a typo in the
+  check, the page was right). Tests written but `npm test` NOT run, per Arjun's request.
+  Note: PLAN.md still lists the old lesson names (forex, investing vs trading as lessons) and was
+  not edited. Mission 4 needs an index fund as well as 3 sectors: three stocks alone score 35, not green.
+
 ## Next step (exact)
-M6 Learn mode, part 1: one line on why it matters, explain the plan in plain words, split
-into parts (5 lessons under 5 minutes each, each with a quiz; starter quiz before lesson 1,
-same quiz after lesson 5; "now try it" links). Arjun's one choice could be the lesson order
-or a lesson's example. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+M6: Arjun runs `npm test` (expect the old 51 plus the new quiz and tutorial tests), plays the
+tutorial from `learn.html` on his phone or browser, then commits and pushes the `m6-tutorial`
+branch. If all is well: check the "Done when" on the live link (a friend finishes mission 1 in under
+5 minutes and gets the quiz right), add the Build log entry, move the strip to 6 of 16, then the
+LEARNED question and the update to Sahil. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -87,6 +106,9 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
   trades clean. M4 closed.
 - **25 Oct 2026** — M4 rule change: whole shares, 10 lakh, 25% per-buy cap. 26/26 green.
   Then all of M5 in three parts, each checked by Arjun live. M5 closed. 51/51.
+
+- **29 Oct 2026** — M6 designed with Arjun (guided missions instead of text lessons), branch
+  `m6-tutorial` made, everything built and browser-checked. Stopped before `npm test`, commit and push.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them

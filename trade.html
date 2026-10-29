@@ -143,7 +143,12 @@
       .big { font-size: 18px; }
       .donut { height: 180px; }
     }
+
+    /* ---- practice money banner (tutorial) and the price chart ---- */
+    .practice { background: var(--warn-bg); color: var(--warn); font-size: 13px; font-weight: 700; text-align: center; padding: 5px 12px; }
+    .price-box { position: relative; height: 240px; margin-top: 12px; }
   </style>
+  <link rel="stylesheet" href="tutorial.css">
 </head>
 <body>
 
@@ -159,6 +164,7 @@
   </header>
 
   <div class="money" aria-live="polite">
+    <div class="practice" id="practice" hidden>Tutorial practice money. Your real portfolio is safe and untouched.</div>
     <div class="wrap">
       <div><div class="label">Cash</div><div class="amt" id="cash">&hellip;</div></div>
       <div><div class="label">Holdings</div><div class="amt" id="holdings">&hellip;</div></div>
@@ -224,6 +230,15 @@
       <div id="moves"><p class="empty">Buy something and you'll see how much it moves.</p></div>
     </section>
 
+    <section id="history-chart-section">
+      <h2>A company's last 120 days</h2>
+      <p class="note">The closing price each day, in US dollars. Tap the line to see what happened that day.</p>
+      <label for="chart-symbol">Company</label>
+      <select id="chart-symbol" disabled><option>Loading prices&hellip;</option></select>
+      <div class="price-box"><canvas id="price-chart" role="img" aria-label="Line chart of one company's closing price over its last 120 days"></canvas></div>
+      <p class="quote" id="price-note"></p>
+    </section>
+
     <section>
       <h2>Trade history</h2>
       <div id="history"><p class="empty">No trades yet.</p></div>
@@ -253,11 +268,15 @@
     import { showDataDate, formatDate } from './lib/asof.js';
     import { INSTRUMENTS } from './lib/universe.js';
     import { pricesInPaise } from './lib/prices.js';
-    import { allocation, volatility, diversification } from './lib/risk.js';
+    import { allocation, volatility, diversification, biggestDrop } from './lib/risk.js';
     import { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE } from './lib/portfolio.js';
+    import { mountTutorial } from './lib/tutorial-ui.js';
+    import { browserStorage, loadProgress, saveKeyFor, walletMode } from './lib/tutorial.js';
 
-    // v2: 10 lakh and whole shares. Old v1 saves (1 lakh, part shares) are left alone.
-    const SAVE_KEY = 'yis.portfolio.v2';
+    const storage = browserStorage();
+    // While a tutorial mission is on, trades go to the separate practice wallet.
+    // The real portfolio key is not touched. Looked up each time, so it switches the moment the tutorial ends.
+    const saveKey = () => saveKeyFor(loadProgress(storage));
     const $ = (id) => document.getElementById(id);
     const byId = Object.fromEntries(INSTRUMENTS.map((i) => [i.symbol, i]));
 
@@ -273,18 +292,19 @@
     let stocks = null;   // full price history, for "how bumpy is it"
     let forex = null;
     let portfolio = load();
+    let tutorial = null;
 
     // ---- saving in the browser ----
     function load() {
       try {
-        const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+        const saved = JSON.parse(storage.getItem(saveKey()));
         if (isPortfolio(saved)) return saved;
         if (saved !== null) console.warn('Saved portfolio looked damaged, starting fresh.');
       } catch { /* private window or blocked storage: just start fresh */ }
       return newPortfolio();
     }
     function save() {
-      try { localStorage.setItem(SAVE_KEY, JSON.stringify(portfolio)); } catch { /* not fatal */ }
+      try { storage.setItem(saveKey(), JSON.stringify(portfolio)); } catch { /* not fatal */ }
     }
 
     // ---- drawing the page from the state ----
@@ -328,7 +348,74 @@
       renderSpread();
       renderMoves();
       renderQuote();
+      $('practice').hidden = !walletMode(loadProgress(storage));
+      tutorial?.check();
     }
+
+    // ---- a company's last 120 days ----
+    let priceChart = null;
+    let guessDate = null; // the day the learner tapped
+    const priceHistory = () => stocks?.prices?.[$('chart-symbol').value]?.history ?? []; // newest first
+    const shortDate = (iso) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+
+    function pickDay(date) {
+      guessDate = date;
+      renderPriceChart();
+      tutorial?.check();
+    }
+
+    function renderPriceChart() {
+      const newestFirst = priceHistory();
+      const days = newestFirst.slice().reverse(); // a line reads oldest to newest
+      const tapped = days.findIndex((d) => d.date === guessDate);
+      const t = tutorial?.state();
+      const hideAnswer = !!t && t.active && t.step === 4 && !t.showCard; // don't spoil mission 5
+
+      const parts = [];
+      if (tapped > 0) {
+        const move = (days[tapped].close / days[tapped - 1].close - 1) * 100;
+        parts.push(`${formatDate(days[tapped].date)}: <span class="${move >= 0 ? 'up' : 'down'}">${move >= 0 ? '+' : '−'}${Math.abs(move).toFixed(1)}%</span> compared with the day before`);
+      }
+      const worst = biggestDrop(newestFirst);
+      if (worst && !hideAnswer) parts.push(`Biggest one-day drop: <span class="down">−${Math.abs(worst.percent).toFixed(1)}%</span> on ${formatDate(worst.date)}`);
+      $('price-note').innerHTML = parts.join(' · ') || (days.length ? 'Tap the line to pick a day.' : '');
+
+      if (!window.Chart || !days.length) return;
+      const data = {
+        labels: days.map((d) => d.date),
+        datasets: [{
+          data: days.map((d) => d.close), borderColor: '#2563EB', borderWidth: 2, tension: 0,
+          pointRadius: days.map((_, i) => (i === tapped ? 6 : 0)),
+          pointBackgroundColor: days.map((_, i) => (i === tapped ? '#B42318' : '#2563EB')),
+        }],
+      };
+      if (priceChart) {
+        priceChart.data = data;
+        priceChart.update('none');
+        return;
+      }
+      priceChart = new Chart($('price-chart'), {
+        type: 'line', data,
+        options: {
+          maintainAspectRatio: false, animation: false,
+          interaction: { mode: 'nearest', axis: 'x', intersect: false },
+          onClick: (event, _elements, c) => {
+            const hit = c.getElementsAtEventForMode(event, 'nearest', { axis: 'x', intersect: false }, true)[0];
+            if (hit) pickDay(c.data.labels[hit.index]);
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { title: (items) => formatDate(items[0].label), label: (c) => ` $${c.parsed.y.toFixed(2)}` } },
+          },
+          scales: {
+            x: { ticks: { maxTicksLimit: 5, callback(v) { return shortDate(this.getLabelForValue(v)); } }, grid: { display: false } },
+            y: { title: { display: true, text: 'US dollars' } },
+          },
+        },
+      });
+    }
+
+    $('chart-symbol').addEventListener('change', () => { guessDate = null; renderPriceChart(); });
 
     // ---- where your money is ----
     // Fixed colours, so "Technology" is the same blue every time you look.
@@ -523,7 +610,21 @@
           : prices[i.symbol] ? `<option value="${i.symbol}">${i.name} (${i.symbol})</option>` : '')
         .join('');
       for (const id of ['symbol', 'qty', 'buy', 'sell']) $(id).disabled = false;
+
+      const charted = INSTRUMENTS.filter((i) => stocks.prices?.[i.symbol]?.history?.length > 1);
+      $('chart-symbol').innerHTML = charted.map((i) => `<option value="${i.symbol}">${i.name} (${i.symbol})</option>`).join('');
+      if (charted.some((i) => i.symbol === 'TSLA')) $('chart-symbol').value = 'TSLA';
+      $('chart-symbol').disabled = !charted.length;
+
+      // Created last: the page is fully drawn before the tutorial dims it.
+      tutorial = mountTutorial({
+        page: 'trade.html',
+        getContext: () => ({ portfolio, prices, history: priceHistory(), guessDate, symbol: $('chart-symbol').value }),
+        onChange: () => { portfolio = load(); $('msg').hidden = true; render(); renderPriceChart(); },
+      });
       render();
+      renderPriceChart();
+      tutorial.refocus(); // the page has only just taken its final shape
     }
 
     start();

@@ -46,3 +46,13 @@
 - An apostrophe inside text wrapped in single quotes (`'you'll'`) ends the text early and breaks the whole page. The browser test caught it before anyone saw it.
 - A **diversification score** turns "how spread out am I?" into one number. Mine gives 60 points for owning many different things and 40 for being in different sectors. One stock scores 0, five stocks 57, a mix with an index fund 94.
 - The **effective number** of things you own counts big pieces more. 4 equal pieces counts as 4, but one huge piece and three tiny ones counts as about 1.
+- A **tutorial overlay** puts a dim layer over the whole page and cuts a hole around one control. Four dark boxes (top, bottom, left, right) surround the hole, so clicks outside it hit a box instead of the page.
+- A step only counts when the app **checks it really happened** (the slider is at 20, the fund is in the wallet). A Next button alone would let anyone skip, so the checks sit in one file with tests, and the screen just asks it.
+- Keeping the **rules in one file and the drawing in another** means I can test the rules with no browser at all.
+- A **separate save key** gives the tutorial its own practice wallet. The real portfolio has a different name in the browser's storage, so a mission trade can't land on it. The tests spy on every write to prove it.
+- A before-and-after quiz only means something if it asks the **exact same questions** both times, so both quizzes are built from one list. A test checks they match.
+- A quiz with blank answers is **refused**, not scored as 0. "Not sure" is an answer, but it counts as wrong.
+- I assumed 3 shares in 3 sectors would turn the score green. The real numbers said **35**. It takes an index fund as well (80). Checking the maths before building saved a mission nobody could finish.
+- A **fixture** is made-up data for a test, like round prices. I used round ones so I can check the expected answers by hand.
+- The page keeps changing shape while it loads, so the tutorial scrolls to its target **again** once everything is drawn. The cash bar that sticks to the top also hides things, so the scroll leaves room for it.
+- A **headless browser** is a real browser with no window. A script played the whole tutorial in it at phone size, clicking and tapping the chart, and found the scrolling problem before anyone else saw it.
