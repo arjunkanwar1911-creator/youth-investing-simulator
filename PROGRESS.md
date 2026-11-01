@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M7 — Move to a real app
-**Current part:** M6 closed on 1 Nov (Build log entry added, strip at 6/16). Arjun commits and pushes it himself. M7 not started.
+**Current part:** M7 part 1 built on branch `m7-nextjs` (1 Nov): pages moved into Next.js. Not yet installed, run, committed or pushed.
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -92,12 +92,20 @@
   on WhatsApp, and the "Done when" check on the live link after he pushes (a friend finishes
   mission 1 in under 5 minutes and gets the quiz right) — not yet verified.
 
+- **M7 part 1 — pages moved into Next.js** (1 Nov, branch `m7-nextjs`, NOT yet run by Arjun, not committed).
+  New: `app/` (layout, plus one folder per page with `page.js`, `body.html`, `page.css`, `client.js`),
+  `app/data/[file]/route.js` (serves `data/*.json` at `/data/...`), `app/load-chart.js`,
+  `next.config.mjs` (old links like `/trade.html` still work), `.env.example`, `.gitignore` additions,
+  next/react/react-dom in `package.json`. Untouched: `lib/`, `data/`, `scripts/`, `test/`, the GitHub
+  Actions, `tutorial.css`. `npm test` 89/89. Old root `*.html` files are kept on purpose so the GitHub
+  Pages link keeps working until the forward to Vercel is set up (then delete them). The Next.js build
+  has NOT been run yet. Not done: Vercel project, forwarding the old link, "Done when" check, Build log
+  entry, strip to 7/16.
+
 ## Next step (exact)
-1. Arjun commits and pushes the M6 changes (`index.html`, `PROGRESS.md`, `LEARNED.md`); Claude
-   then re-checks "Done when" on the live link.
-2. Send the M6 update to Sahil.
-3. Start M7 — Move to a real app (read the M7 section of PLAN.md first, give the one-line "why it
-   matters", split into 30–45 minute parts). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+1. Arjun runs `npm install`, then `npm run dev`, opens http://localhost:3000 and clicks through all 5 pages (calculator sliders, a trade, markets, the learn missions). Also `npm run build`.
+2. Fix anything that looks or works differently.
+3. Then: commit, connect the repo to Vercel (free Hobby), forward the GitHub Pages link, delete the old root html files, Build log entry, strip to 7/16.
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 

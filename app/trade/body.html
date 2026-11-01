@@ -1,0 +1,110 @@
+<header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>Trade with pretend money</h1>
+      <p>You start with &#8377;10,00,000. Buy and sell real companies and index funds at
+         their latest closing price, in whole shares. One buy can be at most a quarter
+         of everything you have.</p>
+      <span class="asof-chip" data-asof>Loading&hellip;</span>
+    </div>
+  </header>
+
+  <div class="money" aria-live="polite">
+    <div class="practice" id="practice" hidden>Tutorial practice money. Your real portfolio is safe and untouched.</div>
+    <div class="wrap">
+      <div><div class="label">Cash</div><div class="amt" id="cash">&hellip;</div></div>
+      <div><div class="label">Holdings</div><div class="amt" id="holdings">&hellip;</div></div>
+      <div class="total"><div class="label">Total value</div><div class="amt" id="total">&hellip;</div>
+        <div class="sub" id="vs-start"></div></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <section>
+      <h2>Place an order</h2>
+      <p class="note">No borrowing, no selling what you don't own. Just like a real
+         beginner's account.</p>
+      <form id="order" novalidate>
+        <div class="order">
+          <div>
+            <label for="symbol">What</label>
+            <select id="symbol" disabled><option>Loading prices&hellip;</option></select>
+          </div>
+          <div>
+            <label for="qty">How many shares</label>
+            <input id="qty" inputmode="numeric" autocomplete="off" placeholder="2" disabled>
+          </div>
+        </div>
+        <p class="quote" id="quote"></p>
+        <div class="buttons">
+          <button type="submit" class="buy" id="buy" disabled>Buy</button>
+          <button type="button" class="sell" id="sell" disabled>Sell</button>
+          <button type="button" class="ghost" id="sell-all" hidden>Sell all of it</button>
+        </div>
+        <p class="msg" id="msg" role="status" hidden></p>
+      </form>
+    </section>
+
+    <section>
+      <h2>What you own</h2>
+      <div id="owned"><p class="empty">Nothing yet. All your money is cash.</p></div>
+    </section>
+
+    <section>
+      <h2>Where your money is</h2>
+      <p class="note">The money you've put into shares, split three ways. Cash isn't on the ring.</p>
+      <div class="tabs" role="group" aria-label="Split by">
+        <button type="button" data-split="kind" aria-pressed="true">Asset type</button>
+        <button type="button" data-split="sector" aria-pressed="false">Sector</button>
+        <button type="button" data-split="currency" aria-pressed="false">Currency</button>
+      </div>
+      <div class="split">
+        <div class="donut"><canvas id="split-chart" role="img" aria-label="Chart of where your money is"></canvas></div>
+        <div><ul class="legend" id="split-legend"></ul>
+          <p class="note cash-line" id="split-cash"></p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>How spread out is it?</h2>
+      <div id="spread"><p class="empty">Buy something to get your diversification score.</p></div>
+    </section>
+
+    <section>
+      <h2>How bumpy is it?</h2>
+      <div id="moves"><p class="empty">Buy something and you'll see how much it moves.</p></div>
+    </section>
+
+    <section id="history-chart-section">
+      <h2>A company's last 120 days</h2>
+      <p class="note">The closing price each day, in US dollars. Tap the line to see what happened that day.</p>
+      <label for="chart-symbol">Company</label>
+      <select id="chart-symbol" disabled><option>Loading prices&hellip;</option></select>
+      <div class="price-box"><canvas id="price-chart" role="img" aria-label="Line chart of one company's closing price over its last 120 days"></canvas></div>
+      <p class="quote" id="price-note"></p>
+    </section>
+
+    <section>
+      <h2>Trade history</h2>
+      <div id="history"><p class="empty">No trades yet.</p></div>
+    </section>
+
+    <section>
+      <div class="reset-row">
+        <span>Saved in this browser, so a refresh won't wipe it.</span>
+        <button type="button" class="ghost danger" id="reset">Start again with &#8377;10,00,000</button>
+        <button type="button" class="ghost danger" id="reset-yes" hidden>Yes, wipe everything</button>
+        <button type="button" class="ghost" id="reset-no" hidden>Keep my portfolio</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>Prices are the latest close, converted to rupees at the latest exchange rate.
+         <a href="markets.html">See the market data</a>.</p>
+    </footer>
+  </div>

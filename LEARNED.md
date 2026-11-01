@@ -59,3 +59,13 @@
 
 ## M6 — Learn mode (my answer)
 - The score turned green in mission 4 because I added an index fund as well as three sectors.
+
+## M7 — Next.js and Vercel
+- A **framework** is a ready-made frame for an app. Next.js decides where pages, styles and data live, so I only fill in the pages.
+- **Vercel** is a free host that builds the app again on every push to GitHub, so a push is a new version.
+- A Next.js **page** is a folder with a file called page.js. The folder name becomes the web address (app/trade is /trade).
+- A **layout** is the frame shared by every page, like the html and body tags.
+- A **server** part runs first and builds the page. A **client** part ('use client') runs in my browser and makes it clickable.
+- A **rewrite** keeps old links alive: /trade.html quietly shows the /trade page.
+- **.env.local** holds secrets on my own computer and is never committed. **.env.example** lists the names only, with no values, so anyone can see what is needed.
+- NEXT_PUBLIC_ at the start of a name means the browser may see it, so it must never hold a secret key.
