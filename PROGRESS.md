@@ -1,8 +1,8 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M6 — Learn mode
-**Current part:** M6 built on branch `m6-tutorial` (29 Oct), waiting for Arjun to run `npm test`, check it in the browser, then commit and push
+**Current milestone:** M7 — Move to a real app
+**Current part:** M6 closed on 1 Nov (Build log entry added, strip at 6/16). Arjun commits and pushes it himself. M7 not started.
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -87,12 +87,17 @@
   Note: PLAN.md still lists the old lesson names (forex, investing vs trading as lessons) and was
   not edited. Mission 4 needs an index fund as well as 3 sectors: three stocks alone score 35, not green.
 
+- **M6 closed** (1 Nov) — Arjun reported all tests passed. Build log entry added, strip at 6/16.
+  Still to do for M6: Arjun's answer to the LEARNED question (asked 1 Nov), the update to Sahil
+  on WhatsApp, and the "Done when" check on the live link after he pushes (a friend finishes
+  mission 1 in under 5 minutes and gets the quiz right) — not yet verified.
+
 ## Next step (exact)
-M6: Arjun runs `npm test` (expect the old 51 plus the new quiz and tutorial tests), plays the
-tutorial from `learn.html` on his phone or browser, then commits and pushes the `m6-tutorial`
-branch. If all is well: check the "Done when" on the live link (a friend finishes mission 1 in under
-5 minutes and gets the quiz right), add the Build log entry, move the strip to 6 of 16, then the
-LEARNED question and the update to Sahil. Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
+1. Arjun commits and pushes the M6 changes (`index.html`, `PROGRESS.md`, `LEARNED.md`); Claude
+   then re-checks "Done when" on the live link.
+2. Send the M6 update to Sahil.
+3. Start M7 — Move to a real app (read the M7 section of PLAN.md first, give the one-line "why it
+   matters", split into 30–45 minute parts). Still open from 19 Oct: cron `30 2 * * *` -> 03:15?
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -120,7 +125,7 @@ over, and report progress as a ticked checklist.
 - [x] M3 Real market data, refreshed by itself
 - [x] M4 Paper trading core
 - [x] M5 Risk and diversification
-- [ ] M6 Learn mode
+- [x] M6 Learn mode
 - [ ] M7 Move to a real app
 - [ ] M8 Accounts with Google sign in
 - [ ] M9 Time machine and weekly challenge

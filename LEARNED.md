@@ -56,3 +56,6 @@
 - A **fixture** is made-up data for a test, like round prices. I used round ones so I can check the expected answers by hand.
 - The page keeps changing shape while it loads, so the tutorial scrolls to its target **again** once everything is drawn. The cash bar that sticks to the top also hides things, so the scroll leaves room for it.
 - A **headless browser** is a real browser with no window. A script played the whole tutorial in it at phone size, clicking and tapping the chart, and found the scrolling problem before anyone else saw it.
+
+## M6 — Learn mode (my answer)
+- The score turned green in mission 4 because I added an index fund as well as three sectors.
