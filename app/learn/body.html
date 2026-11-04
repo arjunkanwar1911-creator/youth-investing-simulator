@@ -1,0 +1,43 @@
+<header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>Learn by doing</h1>
+      <p>Five short missions inside the real app. A quiz before and again after shows what you learned.</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section id="quiz-box" hidden>
+      <h2 id="quiz-step"></h2>
+      <p class="lead" id="quiz-lead"></p>
+      <form id="quiz" novalidate>
+        <ol class="qs" id="qs"></ol>
+        <p class="msg bad" id="quiz-msg" role="alert" hidden></p>
+        <div class="actions"><button type="submit" class="buy" id="quiz-submit"></button></div>
+      </form>
+    </section>
+
+    <section id="missions-box" hidden>
+      <h2>Your missions</h2>
+      <p class="note" id="missions-note"></p>
+      <ol class="missions" id="missions"></ol>
+      <div class="actions" id="missions-actions"></div>
+    </section>
+
+    <section id="results-box" hidden>
+      <h2>Before and after</h2>
+      <div class="scores" id="scores"></div>
+      <p class="verdict" id="verdict"></p>
+      <div id="badge"></div>
+      <div class="actions"><button type="button" class="ghost" id="replay">Play the missions again</button></div>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>The missions use a separate practice wallet of &#8377;10,00,000, so your real portfolio is never touched.</p>
+    </footer>
+  </div>

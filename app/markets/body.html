@@ -1,0 +1,52 @@
+<header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>Market data</h1>
+      <p>Real closing prices and real exchange rates. A robot fetches these every night
+         at 8am India time &mdash; nobody presses anything.</p>
+      <span class="asof-chip" data-asof>Loading&hellip;</span>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section>
+      <h2>Currencies</h2>
+      <p class="note">What one unit of each currency is worth in rupees. This is why a US
+         share that didn't move can still change your money.</p>
+      <div class="fx" id="fx"><p class="loading">Loading rates&hellip;</p></div>
+    </section>
+
+    <section>
+      <h2>What you'll be able to trade</h2>
+      <p class="note">Twenty instruments: fifteen companies you've heard of, and five index
+         funds that each hold hundreds of companies at once. The little line is the last
+         30 trading days.</p>
+      <div class="table-box">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Close</th>
+              <th scope="col">In rupees</th>
+              <th scope="col">30 days</th>
+              <th scope="col">Change</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="5" class="loading">Loading prices&hellip;</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>Currencies from <a href="https://frankfurter.dev">Frankfurter</a>, prices from
+         <a href="https://twelvedata.com">Twelve Data</a>, both on free plans. Fetched by
+         <a href="https://github.com/arjunkanwar1911-creator/youth-investing-simulator/blob/main/.github/workflows/prices.yml">a nightly GitHub Action</a>.</p>
+    </footer>
+  </div>
