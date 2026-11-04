@@ -1,0 +1,113 @@
+<header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>What does time do to money?</h1>
+      <p>Move the sliders. Watch what happens to someone who waits five years before starting.</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section>
+      <h2>Your plan</h2>
+      <div class="controls">
+        <div class="field">
+          <label for="start">Starting amount</label>
+          <div class="value" id="start-out">&#8377;10,000</div>
+          <input type="range" id="start" min="0" max="500000" step="1000" value="10000"
+                 aria-describedby="start-out">
+        </div>
+        <div class="field">
+          <label for="topup">Added every month</label>
+          <div class="value" id="topup-out">&#8377;2,000</div>
+          <input type="range" id="topup" min="0" max="50000" step="500" value="2000"
+                 aria-describedby="topup-out">
+        </div>
+        <div class="field">
+          <label for="rate">Return each year</label>
+          <div class="value" id="rate-out">8%</div>
+          <input type="range" id="rate" min="0" max="20" step="0.5" value="8"
+                 aria-describedby="rate-out">
+        </div>
+        <div class="field" data-tut="years">
+          <label for="years">For how long</label>
+          <div class="value" id="years-out">20 <small>years</small></div>
+          <input type="range" id="years" min="1" max="50" step="1" value="20"
+                 aria-describedby="years-out">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>What you end up with</h2>
+      <div class="hero">
+        <p class="label">If you start now</p>
+        <div class="big" id="final">&#8377;0</div>
+        <p class="sub" id="final-sub">&nbsp;</p>
+      </div>
+      <div class="tiles">
+        <div class="tile">
+          <p class="t-label">Money you put in</p>
+          <div class="t-value" id="contributed">&#8377;0</div>
+          <p class="t-note">Your own cash, added up.</p>
+        </div>
+        <div class="tile">
+          <p class="t-label">Growth on top</p>
+          <div class="t-value" id="growth">&#8377;0</div>
+          <p class="t-note" id="growth-note">Money the money made.</p>
+        </div>
+      </div>
+      <div class="tiles" style="margin-top:12px">
+        <div class="tile warn" style="grid-column: 1 / -1">
+          <p class="t-label">The cost of waiting 5 years</p>
+          <div class="t-value" id="cost">&#8377;0</div>
+          <p class="t-note" id="cost-note">&nbsp;</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="chart-head">
+        <h2 style="margin:0">Growth over time</h2>
+        <button class="toggle" id="table-toggle" aria-expanded="false" aria-controls="table-box">
+          Show the numbers
+        </button>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:#2563EB"></i> Started now</span>
+        <span><i class="swatch" style="background:#D97706"></i> Started 5 years later</span>
+      </div>
+      <div class="chart-box">
+        <p class="chart-fallback" id="chart-fallback" hidden>
+          The chart could not load this time. Every number behind it is in the table below.
+        </p>
+        <canvas id="chart" role="img"
+                aria-label="A line chart comparing the value of starting now against starting five years later. The numbers behind it are in the table below."></canvas>
+      </div>
+      <div class="table-box" id="table-box" hidden>
+        <table>
+          <caption class="sr-only" style="position:absolute;left:-9999px">Value at the end of each year</caption>
+          <thead>
+            <tr><th scope="col">Year</th><th scope="col">Put in</th><th scope="col">Started now</th><th scope="col">Started 5 years later</th></tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Why this happens</h2>
+      <p class="lesson" id="lesson">&nbsp;</p>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p><span data-asof>Loading data date&hellip;</span> &middot; Built by Arjun.
+        The maths behind this page lives in
+        <a href="https://github.com/arjunkanwar1911-creator/youth-investing-simulator/blob/main/lib/compound.js"><code>lib/compound.js</code></a>
+        and is checked by five tests.</p>
+    </footer>
+  </div>
