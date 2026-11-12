@@ -1,8 +1,8 @@
 {
-  "fetchedAt": "2026-11-11T09:39:26.621Z",
-  "asOf": "2026-11-10",
+  "fetchedAt": "2026-11-12T10:00:16.111Z",
+  "asOf": "2026-11-11",
   "instruments": 20,
   "withPrices": 20,
   "failed": [],
-  "forexDate": "2026-11-10"
+  "forexDate": "2026-11-11"
 }
