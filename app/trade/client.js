@@ -12,7 +12,8 @@ export default function PageClient({ html }) {
       const { INSTRUMENTS } = await import('../../lib/universe.js');
       const { pricesInPaise } = await import('../../lib/prices.js');
       const { allocation, volatility, diversification, biggestDrop } = await import('../../lib/risk.js');
-      const { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE } = await import('../../lib/portfolio.js');
+      const { newPortfolio, buy, sell, value, isPortfolio, maxBuyPaise, STARTING_CASH_PAISE, PORTFOLIO_KEY } = await import('../../lib/portfolio.js');
+      const { syncOnSignIn, saveCloudPortfolio } = await import('../../lib/cloud.js');
       const { mountTutorial } = await import('../../lib/tutorial-ui.js');
       const { browserStorage, loadProgress, saveKeyFor, walletMode } = await import('../../lib/tutorial.js');
       
@@ -36,18 +37,84 @@ export default function PageClient({ html }) {
       let forex = null;
       let portfolio = load();
       let tutorial = null;
-      
-      // ---- saving in the browser ----
-      function load() {
+
+      // ---- saving: in the account when signed in, otherwise in the browser ----
+      // `cloud` is set while a learner is signed in: { supabase, userId, savedTrades }.
+      // `cloudPortfolio` is their real portfolio. It is kept apart from `portfolio`
+      // because tutorial missions swap `portfolio` for the practice wallet.
+      let cloud = null;
+      let cloudPortfolio = null;
+      let saveQueue = Promise.resolve(); // saves go one after another, never two at once
+
+      // Real money and signed in: the account is the home. The practice wallet stays in the browser.
+      const cloudMode = () => !!cloud && saveKey() === PORTFOLIO_KEY;
+
+      function readBrowser(key) {
         try {
-          const saved = JSON.parse(storage.getItem(saveKey()));
+          const saved = JSON.parse(storage.getItem(key));
           if (isPortfolio(saved)) return saved;
           if (saved !== null) console.warn('Saved portfolio looked damaged, starting fresh.');
         } catch { /* private window or blocked storage: just start fresh */ }
         return newPortfolio();
       }
+      function load() {
+        return cloudMode() ? cloudPortfolio : readBrowser(saveKey());
+      }
       function save() {
+        if (cloudMode()) return saveToAccount();
         try { storage.setItem(saveKey(), JSON.stringify(portfolio)); } catch { /* not fatal */ }
+      }
+      function saveToAccount() {
+        cloudPortfolio = portfolio;
+        const snapshot = portfolio;
+        const account = cloud;
+        saveQueue = saveQueue
+          .then(async () => { account.savedTrades = await saveCloudPortfolio(account.supabase, account.userId, snapshot, account.savedTrades); })
+          .catch((error) => {
+            console.error(error);
+            say('Could not save to your account just now. Check your internet; your next trade will try again.', false);
+          });
+      }
+
+      // Signing in or out: pick the right portfolio and redraw.
+      async function onSession(supabase, session) {
+        const user = session?.user ?? null;
+        if (!user) {
+          if (!cloud) return;
+          cloud = null;
+          cloudPortfolio = null;
+          portfolio = load(); // back to the browser's copy
+          say('Signed out. Trades save in this browser again.', true);
+          render();
+          return;
+        }
+        if (cloud?.userId === user.id) return;
+        try {
+          const result = await syncOnSignIn(supabase, user.id, readBrowser(PORTFOLIO_KEY));
+          const missing = Object.keys(result.portfolio.holdings).filter((s) => !prices[s]);
+          if (missing.length) throw new Error(`No price today for ${missing.join(', ')}`);
+          cloud = { supabase, userId: user.id, savedTrades: result.savedTrades };
+          cloudPortfolio = result.portfolio;
+          portfolio = load();
+          say(result.copied ? 'Signed in. Your portfolio from this browser is now saved in your account.' : 'Signed in. Your account portfolio is loaded.', true);
+          render();
+        } catch (error) {
+          console.error(error);
+          say('Signed in, but your account portfolio could not be loaded, so trades stay in this browser for now.', false);
+        }
+      }
+
+      async function connectAccount() {
+        try {
+          const { getSupabase } = await import('../supabase.js');
+          const supabase = getSupabase();
+          if (!supabase) return; // no keys on this machine: browser saving only
+          // Called once now with the current sign in, and again on every sign in or out.
+          // setTimeout: Supabase asks us not to call it again from inside this callback.
+          supabase.auth.onAuthStateChange((_event, session) => { setTimeout(() => onSession(supabase, session), 0); });
+        } catch (error) {
+          console.error(error); // browser saving still works
+        }
       }
       
       // ---- drawing the page from the state ----
@@ -368,6 +435,7 @@ export default function PageClient({ html }) {
         render();
         renderPriceChart();
         tutorial.refocus(); // the page has only just taken its final shape
+        connectAccount(); // last: needs prices and the drawn page ready
       }
       
       start();

@@ -1,0 +1,11 @@
+.authbar { background: #1E3A8A; color: #fff; font: 14px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+.authbar-inner {
+  max-width: 960px; margin: 0 auto; padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.authbar button {
+  font: inherit; font-weight: 600; cursor: pointer;
+  background: #fff; color: #1E3A8A; border: 0; border-radius: 8px; padding: 8px 14px; min-height: 40px;
+}
+.authbar button:hover { background: #E0E7FF; }
+.authbar button:focus-visible { outline: 3px solid #FBBF24; outline-offset: 2px; }
