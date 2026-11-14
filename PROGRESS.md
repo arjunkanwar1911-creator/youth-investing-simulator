@@ -1,8 +1,8 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M7 — Move to a real app
-**Current part:** M7 part 1 built on branch `m7-nextjs` (1 Nov): pages moved into Next.js. Not yet installed, run, committed or pushed.
+**Current milestone:** M8 — Accounts with Google sign in
+**Current part:** Not started. M7 closed 4 Nov; live at https://youth-investing-simulator.vercel.app
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -102,10 +102,17 @@
   has NOT been run yet. Not done: Vercel project, forwarding the old link, "Done when" check, Build log
   entry, strip to 7/16.
 
+- **M7 closed** (4 Nov) — Next.js app live on Vercel at https://youth-investing-simulator.vercel.app.
+  The old GitHub Pages link forwards there (root html files now redirect). Merged to main as PR #1.
+  Docs caught up 14 Nov: README live link, Build log entry, strip at 7/16.
+  Still open: whether Vercel deploys by itself on every push to main (check Vercel, Settings, Git);
+  Supabase keys not yet in Vercel settings (needed in M8).
+
 ## Next step (exact)
-1. Arjun runs `npm install`, then `npm run dev`, opens http://localhost:3000 and clicks through all 5 pages (calculator sliders, a trade, markets, the learn missions). Also `npm run build`.
-2. Fix anything that looks or works differently.
-3. Then: commit, connect the repo to Vercel (free Hobby), forward the GitHub Pages link, delete the old root html files, Build log entry, strip to 7/16.
+M8: Google sign in with Supabase on branch `m8-signin`. Google Cloud project and OAuth consent
+screen (testing mode, two test users), Google provider switched on in Supabase, Site URL and
+redirect URLs set, `.env.local` filled from `.env.example`, the same two values added in Vercel.
+Then build, run `supabase/m8.sql`, test with two accounts, ship.
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -122,6 +129,8 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
 
 - **29 Oct 2026** — M6 designed with Arjun (guided missions instead of text lessons), branch
   `m6-tutorial` made, everything built and browser-checked. Stopped before `npm test`, commit and push.
+- **1 Nov 2026** — M6 closed. M7 part 1 built on `m7-nextjs`.
+- **4 Nov 2026** — M7 run, forwarded the old link to Vercel, merged (PR #1). M7 closed.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
@@ -134,7 +143,7 @@ over, and report progress as a ticked checklist.
 - [x] M4 Paper trading core
 - [x] M5 Risk and diversification
 - [x] M6 Learn mode
-- [ ] M7 Move to a real app
+- [x] M7 Move to a real app
 - [ ] M8 Accounts with Google sign in
 - [ ] M9 Time machine and weekly challenge
 - [ ] M10 A leaderboard that rewards being responsible

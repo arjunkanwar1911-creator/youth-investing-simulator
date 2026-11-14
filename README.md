@@ -1,6 +1,8 @@
 # Youth Investing Simulator
 
-**Live link:** https://arjunkanwar1911-creator.github.io/youth-investing-simulator
+**Live link:** https://youth-investing-simulator.vercel.app
+
+**Progress:** M7 of 16 milestones done · now building M8, accounts with Google sign in ([`PROGRESS.md`](PROGRESS.md))
 
 Learn how money grows — compound interest, risk and diversification — by investing
 pretend money on real market prices.
@@ -23,13 +25,13 @@ Success isn't the app. It's how many young people learn to invest responsibly wi
 
 ## What it does
 
-| Stage | What gets built |
-|---|---|
-| Foundations | A live link, a compound interest calculator, real market prices refreshed nightly |
-| The simulator | Paper trading with ₹10,00,000 of pretend money, risk and diversification scoring |
-| Learn mode | Five lessons under five minutes each, with a before-and-after quiz |
-| Real app | Accounts, saved portfolios, a time machine and a responsible leaderboard |
-| Community | A public impact page, a classroom pack, and measured learning |
+| Stage | What gets built | Status |
+|---|---|---|
+| Foundations | A live link, a compound interest calculator, real market prices refreshed nightly | Done (M1 to M3) |
+| The simulator | Paper trading with ₹10,00,000 of pretend money, risk and diversification scoring | Done (M4, M5) |
+| Learn mode | Five guided missions inside the real app, with a before-and-after quiz | Done (M6) |
+| Real app | Next.js on Vercel (done, M7), then accounts, saved portfolios, a time machine and a responsible leaderboard | In progress (M8 next) |
+| Community | A public impact page, a classroom pack, and measured learning | Not started |
 
 Full plan: [`PLAN.md`](PLAN.md) · Original brief: [`docs/plan.pdf`](docs/plan.pdf)
 
@@ -39,6 +41,12 @@ Full plan: [`PLAN.md`](PLAN.md) · Original brief: [`docs/plan.pdf`](docs/plan.p
 - Free plans only. Nothing that needs a credit card.
 - Daily closing prices, not live tick data.
 - Privacy and safety before growth — it's built for young learners.
+
+## Built with
+
+- **App:** Next.js, hosted on Vercel (free Hobby plan)
+- **Charts:** Chart.js
+- **Nightly prices and tests:** GitHub Actions
 
 ## Data
 
