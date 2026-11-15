@@ -80,3 +80,5 @@
 - An **OAuth redirect** is how the app sends me to Google and Google sends me back. I say which page to return to, and Supabase only allows addresses on its list.
 - A **primary key** of (user, trade number) means saving the same trade twice just does nothing, so a flaky connection can't make duplicates.
 - A **fake client** is a pretend Supabase in memory. My tests run with no internet and still check every save and load.
+- A **Supabase address** ends at `.supabase.co`. The `/rest/v1/` one is only for the database, and the sign in code adds its own bits to the end.
+- **Exchange the code** is Supabase's last step after Google says yes. It needs the right **Client Secret**, so a wrong secret fails here even though the Google screen worked.
