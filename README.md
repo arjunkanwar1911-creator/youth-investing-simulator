@@ -2,7 +2,7 @@
 
 **Live link:** https://youth-investing-simulator.vercel.app
 
-**Progress:** M7 of 16 milestones done · now building M8, accounts with Google sign in ([`PROGRESS.md`](PROGRESS.md))
+**Progress:** M8 of 16 milestones done · now building M9, time machine and weekly challenge ([`PROGRESS.md`](PROGRESS.md))
 
 Learn how money grows — compound interest, risk and diversification — by investing
 pretend money on real market prices.

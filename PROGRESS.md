@@ -162,7 +162,7 @@ over, and report progress as a ticked checklist.
 - [x] M5 Risk and diversification
 - [x] M6 Learn mode
 - [x] M7 Move to a real app
-- [ ] M8 Accounts with Google sign in
+- [x] M8 Accounts with Google sign in
 - [ ] M9 Time machine and weekly challenge
 - [ ] M10 A leaderboard that rewards being responsible
 - [ ] M11 Safe for young learners
