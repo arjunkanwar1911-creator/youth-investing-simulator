@@ -69,3 +69,16 @@
 - A **rewrite** keeps old links alive: /trade.html quietly shows the /trade page.
 - **.env.local** holds secrets on my own computer and is never committed. **.env.example** lists the names only, with no values, so anyone can see what is needed.
 - NEXT_PUBLIC_ at the start of a name means the browser may see it, so it must never hold a secret key.
+
+## M8 — Accounts with Google sign in
+- **Sign in** proves who you are. Google vouches for me, so the app never sees a password.
+- A **database table** is a spreadsheet on a server: one row per trade, one column per detail.
+- **Row level security** is a lock on every row. The database checks "is this row yours?" before it shows or changes anything, so the protection holds even if my page code has a bug.
+- A **policy** is one key for that lock, such as "you may read rows where user_id is you". A table with the lock on and no policy shows nobody anything.
+- A **grant** says who may even knock on the table. New tables are not shared with the app automatically, so I grant signed-in learners access and signed-out visitors none.
+- A **publishable key** is meant to be seen by the browser. The lock protects the data, not the key. A **secret key** skips the lock, so it never goes near the browser.
+- An **OAuth redirect** is how the app sends me to Google and Google sends me back. I say which page to return to, and Supabase only allows addresses on its list.
+- A **primary key** of (user, trade number) means saving the same trade twice just does nothing, so a flaky connection can't make duplicates.
+- A **fake client** is a pretend Supabase in memory. My tests run with no internet and still check every save and load.
+- A **Supabase address** ends at `.supabase.co`. The `/rest/v1/` one is only for the database, and the sign in code adds its own bits to the end.
+- **Exchange the code** is Supabase's last step after Google says yes. It needs the right **Client Secret**, so a wrong secret fails here even though the Google screen worked.

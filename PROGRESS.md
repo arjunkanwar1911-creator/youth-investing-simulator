@@ -108,11 +108,29 @@
   Still open: whether Vercel deploys by itself on every push to main (check Vercel, Settings, Git);
   Supabase keys not yet in Vercel settings (needed in M8).
 
+- **M8 part 1 — sign in and saving built** (14 Nov, branch `m8-signin`, NOT run, NOT committed,
+  `npm install` and `npm test` NOT run). Google provider is on in Supabase and `.env.local` has the
+  two values. New: `supabase/m8.sql` (tables `portfolios` and `trades`, row level security, policies
+  "own rows only", grants: signed-in learners yes, signed-out none), `lib/cloud.js` (save, load, and
+  "first sign in copies the browser portfolio up if the account is empty"), `app/supabase.js` (publishable
+  key only), `app/auth-bar.js` + `.css` (Sign in with Google / Sign out strip on every page, returns to
+  the same page), `test/cloud.test.js` (12 tests with a pretend Supabase). Changed: `app/layout.js`,
+  `app/trade/client.js` (signed in: trades save to the account, real portfolio only, the tutorial practice
+  wallet stays in the browser; signed out: browser saving as before), `package.json`
+  (`@supabase/supabase-js`), `.env.example`, `LEARNED.md`.
+  Not in this part: quiz results saved per learner (PLAN lists them; the M8 brief was portfolio and trades),
+  Supabase keys in Vercel settings, the Vercel address in Supabase redirect URLs.
+
 ## Next step (exact)
-M8: Google sign in with Supabase on branch `m8-signin`. Google Cloud project and OAuth consent
-screen (testing mode, two test users), Google provider switched on in Supabase, Site URL and
-redirect URLs set, `.env.local` filled from `.env.example`, the same two values added in Vercel.
-Then build, run `supabase/m8.sql`, test with two accounts, ship.
+M8 part 2, in this order:
+1. `npm install` (adds `@supabase/supabase-js`), then `npm test`.
+2. Run `supabase/m8.sql` in the Supabase SQL Editor.
+3. Supabase, Authentication, URL Configuration: redirect URLs must allow every page, so add
+   `http://localhost:3000/**` and `https://youth-investing-simulator.vercel.app/**`.
+4. `npm run dev`, sign in at /trade, make a trade, refresh, sign out and in again.
+5. Test with a second Google account: it must see an empty account and not the first one's trades.
+6. Add the two Supabase values to Vercel settings, then commit, push, check the live link.
+Then close M8: "Done when" on the live link, Build log entry, strip to 8/16, LEARNED question, update to Sahil.
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
