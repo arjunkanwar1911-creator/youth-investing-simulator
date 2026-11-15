@@ -35,7 +35,6 @@ export default function PageClient({ html }) {
       let priceDate = null;
       let stocks = null;   // full price history, for "how bumpy is it"
       let forex = null;
-      let portfolio = load();
       let tutorial = null;
 
       // ---- saving: in the account when signed in, otherwise in the browser ----
@@ -48,6 +47,8 @@ export default function PageClient({ html }) {
 
       // Real money and signed in: the account is the home. The practice wallet stays in the browser.
       const cloudMode = () => !!cloud && saveKey() === PORTFOLIO_KEY;
+
+      let portfolio = load();
 
       function readBrowser(key) {
         try {
@@ -442,5 +443,5 @@ export default function PageClient({ html }) {
     })();
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  return <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: html }} />;
 }

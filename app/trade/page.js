@@ -11,6 +11,6 @@ export const metadata = {
 
 // The page's words and boxes live in body.html. Next.js reads them here, on the server.
 export default function Page() {
-  const html = fs.readFileSync(path.join(process.cwd(), 'app/trade/body.html'), 'utf8');
+  const html = fs.readFileSync(path.join(process.cwd(), 'app/trade/body.html'), 'utf8').replace(/\r\n/g, '\n');
   return <PageClient html={html} />;
 }
