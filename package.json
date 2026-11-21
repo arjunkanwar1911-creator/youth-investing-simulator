@@ -8,7 +8,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test"
+    "test": "node --test",
+    "history": "node scripts/fetch-history.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
