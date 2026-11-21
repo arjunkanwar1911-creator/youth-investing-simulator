@@ -1,8 +1,8 @@
 # Progress
 
 **Impact level:** Level 0 — Built
-**Current milestone:** M8 — Accounts with Google sign in
-**Current part:** Not started. M7 closed 4 Nov; live at https://youth-investing-simulator.vercel.app
+**Current milestone:** M9 — Time machine and weekly challenge
+**Current part:** Not started. M8 closed 21 Nov; live at https://youth-investing-simulator.vercel.app
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -121,16 +121,13 @@
   Not in this part: quiz results saved per learner (PLAN lists them; the M8 brief was portfolio and trades),
   Supabase keys in Vercel settings, the Vercel address in Supabase redirect URLs.
 
+- **M8 closed** (21 Nov) — Google sign in and saving to the account, merged as PR #3. `npm test` 101/101.
+  Build log entry added, strip at 8/16. Quiz results per learner were not part of M8; they can
+  join the account in a later milestone. Nightly robot re-run green on 21 Nov with the new key.
+
 ## Next step (exact)
-M8 part 2, in this order:
-1. `npm install` (adds `@supabase/supabase-js`), then `npm test`.
-2. Run `supabase/m8.sql` in the Supabase SQL Editor.
-3. Supabase, Authentication, URL Configuration: redirect URLs must allow every page, so add
-   `http://localhost:3000/**` and `https://youth-investing-simulator.vercel.app/**`.
-4. `npm run dev`, sign in at /trade, make a trade, refresh, sign out and in again.
-5. Test with a second Google account: it must see an empty account and not the first one's trades.
-6. Add the two Supabase values to Vercel settings, then commit, push, check the live link.
-Then close M8: "Done when" on the live link, Build log entry, strip to 8/16, LEARNED question, update to Sahil.
+1. Finish M8: Arjun answers the LEARNED question, then sends the update to Sahil on WhatsApp.
+2. Start M9 (time machine and weekly challenge): read PLAN.md M9, say why it matters, pick part 1.
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -149,6 +146,8 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
   `m6-tutorial` made, everything built and browser-checked. Stopped before `npm test`, commit and push.
 - **1 Nov 2026** — M6 closed. M7 part 1 built on `m7-nextjs`.
 - **4 Nov 2026** — M7 run, forwarded the old link to Vercel, merged (PR #1). M7 closed.
+
+- **21 Nov 2026** — M8 closed. New nightly-robot key set and checked green.
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
