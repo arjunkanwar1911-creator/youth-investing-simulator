@@ -57,6 +57,23 @@
 
       <div class="chart-box" id="chart"></div>
 
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:#2563EB"></i>Your stocks</span>
+        <span id="legend-spread"><i style="background:#D97706"></i>Spread-out mix: S&amp;P 500 fund 40%, Apple, Coca-Cola, Johnson &amp; Johnson, Visa 15% each</span>
+      </div>
+
+      <div id="compare" class="compare" hidden>
+        <h3>Your stocks vs a spread-out mix</h3>
+        <p id="compare-text"></p>
+        <div class="table-box">
+          <table>
+            <thead><tr><th></th><th>Your stocks</th><th>Spread-out mix</th></tr></thead>
+            <tbody id="compare-rows"></tbody>
+          </table>
+        </div>
+        <p class="note">Spreading money over many companies means one bad company hurts less. It does not always win, but the ride is usually calmer.</p>
+      </div>
+
       <div class="suggest" id="suggest">
         <p>You own 0 stocks yet. Buy one to see your line grow. Not sure where to start?</p>
         <div class="chips" id="chips"></div>

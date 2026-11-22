@@ -130,3 +130,17 @@
       h1 { font-size: 24px; }
       .stats { grid-template-columns: repeat(2, 1fr); }
     }
+
+    /* ---- comparison ---- */
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+    .legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+    .compare { margin-top: 20px; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+    .compare h3 { font-size: 16px; margin: 0 0 6px; }
+    .compare p { margin: 0 0 10px; }
+    .compare th { text-align: right; font-size: 13px; color: var(--muted); font-weight: 600; padding: 7px 10px; border-bottom: 1px solid var(--line-soft); }
+    .compare th:first-child, .compare tbody th { text-align: left; }
+    .compare tbody th { color: var(--ink-2); }
+    .compare td { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .compare .note { margin: 12px 0 0; }
+    .tip .spread-line { color: #B45309; font-weight: 600; }
+    .legend[hidden], .compare[hidden] { display: none; }

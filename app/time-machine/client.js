@@ -14,6 +14,9 @@ export default function PageClient({ html }) {
       const START = '2016-01-01';
       const SUGGESTED = ['AAPL', 'SPY', 'KO'];
       const MAX_RESULTS = 6;
+      const ORANGE = '#D97706';
+      // The spread-out mix your stocks are compared with. Whole percents of the same money.
+      const SPREAD = { SPY: 40, AAPL: 15, KO: 15, JNJ: 15, V: 15 };
 
       const $ = (id) => document.getElementById(id);
       const byName = Object.fromEntries(INSTRUMENTS.map((i) => [i.symbol, i]));
@@ -116,7 +119,7 @@ export default function PageClient({ html }) {
 
       // ---- the line chart: same blue line as the markets page, just bigger ----
       // With no stocks it draws an empty chart: a flat line at $0 and a hint.
-      function lineChart(values, amount) {
+      function lineChart(values, amount, other = []) {
         const W = 640, H = 260, L = 52, R = 16, T = 14, B = 30;
         const empty = values.length === 0;
 
@@ -129,7 +132,7 @@ export default function PageClient({ html }) {
           min = 0; max = 100;
         } else {
           dates = values.map((v) => v.date);
-          const nums = values.map((v) => v.value);
+          const nums = [...values, ...other].map((v) => v.value);
           min = Math.min(...nums, amount);
           max = Math.max(...nums, amount);
         }
@@ -163,7 +166,11 @@ export default function PageClient({ html }) {
                   </svg>`;
         }
 
-        current = { values, amount, x, y, W, H, L, R };
+        current = { values, amount, x, y, W, H, L, R, other: new Map(other.map((v) => [v.date, v.value])) };
+        const otherPoints = other.map((v) => {
+          const i = values.findIndex((p) => p.date === v.date);
+          return i < 0 ? null : `${x(i).toFixed(1)},${y(v.value).toFixed(1)}`;
+        }).filter(Boolean).join(' ');
         const points = values.map((v, i) => `${x(i).toFixed(1)},${y(v.value).toFixed(1)}`).join(' ');
         const first = values[0].date.slice(0, 7);
         const last = values.at(-1).date.slice(0, 7);
@@ -173,6 +180,8 @@ export default function PageClient({ html }) {
                   ${ticks}
                   <line x1="${L}" x2="${W - R}" y1="${y(amount).toFixed(1)}" y2="${y(amount).toFixed(1)}"
                         stroke="#5A6578" stroke-dasharray="4 4"/>
+                  <polyline points="${otherPoints}" fill="none" stroke="${ORANGE}"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <polyline points="${points}" fill="none" stroke="${BLUE}"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   ${years}
@@ -193,6 +202,8 @@ export default function PageClient({ html }) {
         $('s-drop').textContent = '—';
         $('total').textContent = '';
         $('chart').innerHTML = lineChart([], 0);
+        $('compare').hidden = true;
+        document.querySelector('.legend').hidden = true;
       }
 
       // ---- redraw the numbers and the chart whenever the stocks or shares change ----
@@ -233,7 +244,39 @@ export default function PageClient({ html }) {
         $('s-total').textContent = signed(result.totalReturnPct, 0);
         $('s-yearly').textContent = result.yearlyReturnPct === null ? '—' : signed(result.yearlyReturnPct);
         $('s-drop').textContent = `−${result.worstDropPct.toFixed(0)}%`;
-        $('chart').innerHTML = lineChart(result.values, amount);
+
+        // The same money, put into the spread-out mix instead.
+        let spread = null;
+        try {
+          const weights2 = Object.fromEntries(Object.entries(SPREAD).map(([s, p]) => [s, p / 100]));
+          spread = timeMachine(history, weights2, amount, date);
+        } catch { spread = null; }
+
+        $('chart').innerHTML = lineChart(result.values, amount, spread ? spread.values : []);
+        drawCompare(result, spread, amount);
+      }
+
+      function drawCompare(mine, spread, amount) {
+        $('compare').hidden = !spread;
+        document.querySelector('.legend').hidden = false;
+        if (!spread) return;
+        const row = (label, a, b) => `<tr><th scope="row">${label}</th><td>${a}</td><td>${b}</td></tr>`;
+        const yearly = (r) => (r.yearlyReturnPct === null ? '—' : signed(r.yearlyReturnPct));
+        $('compare-rows').innerHTML =
+          row('Value today', usd.format(mine.endValue), usd.format(spread.endValue)) +
+          row('Total return', signed(mine.totalReturnPct, 0), signed(spread.totalReturnPct, 0)) +
+          row('Yearly return', yearly(mine), yearly(spread)) +
+          row('Worst drop', `−${mine.worstDropPct.toFixed(0)}%`, `−${spread.worstDropPct.toFixed(0)}%`);
+
+        const diff = mine.endValue - spread.endValue;
+        const calmer = mine.worstDropPct < spread.worstDropPct ? 'less' : 'more';
+        $('compare-text').textContent =
+          `You put in ${usd.format(amount)}. Your stocks ended ${usd.format(Math.abs(diff))} ` +
+          `${diff >= 0 ? 'above' : 'below'} the spread-out mix, and your worst drop was ${mine.worstDropPct.toFixed(0)}% ` +
+          `against ${spread.worstDropPct.toFixed(0)}%. ` +
+          (Math.abs(mine.worstDropPct - spread.worstDropPct) < 1
+            ? 'Both had a similar ride.'
+            : `Your stocks had a ${calmer === 'less' ? 'smoother' : 'bumpier'} ride.`);
       }
 
       // ---- hover / touch on the chart: show the month, the value and the gain ----
@@ -260,9 +303,12 @@ export default function PageClient({ html }) {
         line.setAttribute('visibility', 'visible');
         dot.setAttribute('visibility', 'visible');
 
+        const otherValue = current.other.get(date);
+        const otherLine = otherValue === undefined ? '' :
+          `<span class="spread-line">Spread-out mix ${usd.format(otherValue)}</span>`;
         tip.innerHTML = `<b>${monthName(date)}</b><span>${usd.format(value)}</span>
           <span class="${gain >= 0 ? 'up' : 'down'}">${gain >= 0 ? '+' : '−'}${usd.format(Math.abs(gain))}
-          (${signed((value / amount - 1) * 100, 0)})</span>`;
+          (${signed((value / amount - 1) * 100, 0)})</span>${otherLine}`;
         tip.hidden = false;
         const px = (x(i) / W) * box.width;
         tip.style.left = `${px}px`;
