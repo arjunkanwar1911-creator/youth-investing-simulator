@@ -1,0 +1,93 @@
+<header>
+    <div class="wrap">
+      <a class="back" href="./">&larr; Youth Investing Simulator</a>
+      <h1>Weekly challenge: survive the crash</h1>
+      <p>Everyone gets the same rough patch from the past and the same pretend money.
+         Lose less than the market and you survive.</p>
+      <span class="week-chip" id="week-chip">&nbsp;</span>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section>
+      <h2>1. This week&rsquo;s rough patch</h2>
+      <p class="story">The market is about to have a bad few months. You have <b>$10,000</b> of pretend money.
+         You will not be told when it happens, only that prices fall. Choose what to hold, or keep some
+         cash. Then we replay it and compare you with the S&amp;P 500 fund, which holds 500 big companies.</p>
+      <p class="story">Cash earns nothing, but it does not fall either.</p>
+    </section>
+
+    <section id="play">
+      <h2>2. Pick what you hold</h2>
+
+      <label class="amount-label" for="search">Search a company, a fund or a ticker</label>
+      <input id="search" class="search" type="search" placeholder="Try &quot;coca&quot;, &quot;SPY&quot; or &quot;tech&quot;"
+             autocomplete="off" aria-controls="results">
+      <ul id="results" class="results" aria-label="Search results"></ul>
+
+      <div id="holdings-box" hidden>
+        <p class="note">Choose how many whole shares of each. Prices are from the start of the patch, in US dollars.</p>
+        <div class="table-box">
+          <table>
+            <tbody id="holdings"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="wallet" id="wallet" aria-live="polite">
+        <div><span class="label">Spent on shares</span><b id="w-spent">$0</b></div>
+        <div><span class="label">Cash kept</span><b id="w-cash">$10,000</b></div>
+      </div>
+      <p class="problem" id="problem" role="alert" hidden></p>
+
+      <button type="button" class="lock" id="lock" disabled>Lock in and replay</button>
+      <p class="loading" id="loading">Loading prices&hellip;</p>
+    </section>
+
+    <section id="result-section" hidden>
+      <h2>3. What happened</h2>
+      <div class="verdict" id="verdict"></div>
+
+      <div class="stats">
+        <div class="stat">
+          <p class="label">Your value</p>
+          <div class="value" id="r-yours"></div>
+          <p class="sub" id="r-yours-sub"></p>
+        </div>
+        <div class="stat">
+          <p class="label">S&amp;P 500 fund</p>
+          <div class="value" id="r-market"></div>
+          <p class="sub" id="r-market-sub"></p>
+        </div>
+        <div class="stat">
+          <p class="label">Your worst drop</p>
+          <div class="value" id="r-drop"></div>
+          <p class="sub">From a high point</p>
+        </div>
+        <div class="stat">
+          <p class="label">Market worst drop</p>
+          <div class="value" id="r-mdrop"></div>
+          <p class="sub">From a high point</p>
+        </div>
+      </div>
+
+      <div class="chart-box" id="chart"></div>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:#2563EB"></i>You</span>
+        <span><i style="background:#D97706"></i>S&amp;P 500 fund</span>
+      </div>
+
+      <button type="button" class="preset again" id="again">Change my picks</button>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <p class="disclaimer">Educational, pretend money, not financial advice.</p>
+      <p>Monthly prices from <a href="https://twelvedata.com">Twelve Data</a>, adjusted for share splits.
+         A new patch every Monday 00:00 India time. The maths is in
+         <a href="https://github.com/arjunkanwar1911-creator/youth-investing-simulator/blob/main/lib/challenge.js"><code>lib/challenge.js</code></a>.</p>
+    </footer>
+  </div>
