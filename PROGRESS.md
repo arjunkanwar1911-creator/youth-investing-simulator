@@ -2,7 +2,7 @@
 
 **Impact level:** Level 0 — Built
 **Current milestone:** M9 — Time machine and weekly challenge
-**Current part:** Not started. M8 closed 21 Nov; live at https://youth-investing-simulator.vercel.app
+**Current part:** M9 part 1 (time machine page) done and merged 22 Nov. Part 2 (weekly challenge) not started. Live at https://youth-investing-simulator.vercel.app
 
 ## Done
 - First session setup: project folder, docs/plan.pdf, PLAN.md, CLAUDE.md, PROGRESS.md, LEARNED.md
@@ -125,9 +125,23 @@
   Build log entry added, strip at 8/16. Quiz results per learner were not part of M8; they can
   join the account in a later milestone. Nightly robot re-run green on 21 Nov with the new key.
 
+- **M9 part 1 — Time machine** (22 Nov, merged as PR #4) — `scripts/fetch-history.mjs` and
+  `data/history.json` (monthly prices since 2016, split-adjusted), `lib/timemachine.js`
+  (`timeMachine()`: what-if value, total and yearly return, worst drop, with tests), and the page
+  `/time-machine`. Changes Arjun asked for after trying it: pick stocks by searching (no long list),
+  type whole shares instead of percents, money shown in US dollars (the 2016 prices are dollars),
+  2016 price shown in each search result, chart visible on open with 0 stocks and a nudge to buy one,
+  and hover or touch on the chart shows month, value and gain. Link added on the home page.
+  Fixed a 500 error on `/data/history.json` by restarting the dev server and clearing `.next`.
+  `npm test` 111/111. Not done: the "with and without diversification" comparison from PLAN.md,
+  the weekly challenge, "Done when" check (Sahil runs 3 portfolios, results match real prices),
+  Build log entry, strip stays at 8/16 until M9 closes.
+
 ## Next step (exact)
-1. Finish M8: Arjun answers the LEARNED question, then sends the update to Sahil on WhatsApp.
-2. Start M9 (time machine and weekly challenge): read PLAN.md M9, say why it matters, pick part 1.
+1. Finish M8 loose ends: Arjun answers the LEARNED question, then sends the update to Sahil on WhatsApp.
+2. M9 part 2: add "with and without diversification" to the time machine (one stock vs a spread
+   side by side), then a 15 minute check of the page on the live link.
+3. M9 part 3: the weekly challenge (same scenario for everyone, resets every Monday).
 
 To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 5`
 
@@ -148,6 +162,7 @@ To check the nightly robot any time: `gh run list --workflow=prices.yml --limit 
 - **4 Nov 2026** — M7 run, forwarded the old link to Vercel, merged (PR #1). M7 closed.
 
 - **21 Nov 2026** — M8 closed. New nightly-robot key set and checked green.
+- **22 Nov 2026** — M9 part 1: Time machine built, reshaped from Arjun's feedback, merged (PR #4).
 
 ## Note on how we work
 Arjun asked (12 Oct 2026) that Claude run the terminal commands rather than handing them
